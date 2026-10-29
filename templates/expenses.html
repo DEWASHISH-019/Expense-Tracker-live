@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% block title %}Expenses - ExpenseTracker{% endblock %}
+{% block content %}
+
+{% set cat_icons = {
+    'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c', 'badge-cat-food'),
+    'Groceries': ('bi-basket2-fill', '#fef3c7', '#b45309', 'badge-cat-groceries'),
+    'Bills': ('bi-lightning-charge-fill', '#fffbeb', '#d97706', 'badge-cat-bills'),
+    'Travel': ('bi-airplane-fill', '#eff6ff', '#2563eb', 'badge-cat-travel'),
+    'Shopping': ('bi-bag-heart-fill', '#f0fdfa', '#0d9488', 'badge-cat-shopping'),
+    'Rent': ('bi-house-door-fill', '#e0f2fe', '#0284c7', 'badge-cat-rent'),
+    'Entertainment': ('bi-film', '#fff1f2', '#be123c', 'badge-cat-entertainment'),
+    'Health': ('bi-heart-pulse-fill', '#ecfdf5', '#059669', 'badge-cat-health'),
+    'Personal': ('bi-scissors', '#ecfeff', '#0891b2', 'badge-cat-personal'),
+    'Education': ('bi-mortarboard-fill', '#eef2ff', '#2563eb', 'badge-cat-education'),
+    'Investments': ('bi-graph-up-arrow', '#f0fdf4', '#16a34a', 'badge-cat-investments'),
+    'Other': ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')
+} %}
+
+<!-- Top Header Banner -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge rounded-pill px-3 py-1" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 600;">
+                <i class="bi bi-wallet2 me-1"></i> Ledger
+            </span>
+            <span class="text-muted small" id="expenseCounter">
+                {{ expenses|length }} transaction{{ 's' if expenses|length != 1 else '' }}
+            </span>
+        </div>
+        <h2 class="fw-bold mb-1" style="letter-spacing: -0.02em;">Expenses</h2>
+        <p class="text-muted mb-0 small">Track, search, and manage your financial records.</p>
+    </div>
+    <a href="{{ url_for('add_expense') }}" class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Expense</span>
+    </a>
+</div>
+
+<!-- Integrated Search & Filter Dock -->
+<div class="filter-dock mb-4">
+    <form method="GET" action="{{ url_for('expenses') }}" id="filterForm">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-7">
+                <div class="search-wrapper">
+                    <i class="bi bi-search"></i>
+                    <input class="form-control" id="expenseSearch" name="search" value="{{ search }}" placeholder="Search by title, notes, amount, date..." autocomplete="off">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="expenseCategory" name="category">
+                    <option value="">All Categories</option>
+                    {% for c in ["Food","Groceries","Bills","Travel","Shopping","Rent","Entertainment","Health","Personal","Education","Investments","Other"] %}
+                    <option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-dark flex-grow-1" style="border-radius: 10px; font-size: 0.88rem;">Filter</button>
+                <button type="button" id="resetFilterBtn" class="btn btn-outline-secondary" title="Reset filter" {% if not search and not category %}style="display: none;"{% endif %}>
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Category Filter Pills -->
+    <div class="category-pill-bar mt-3 pt-3 border-top">
+        <button type="button" class="category-pill active" data-cat="">All</button>
+        {% for c in ["Food","Groceries","Bills","Travel","Shopping","Rent","Entertainment","Health","Personal","Education","Investments","Other"] %}
+        {% set icon_info = cat_icons.get(c, ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')) %}
+        <button type="button" class="category-pill" data-cat="{{ c }}">
+            <i class="bi {{ icon_info[0] }}" style="color: {{ icon_info[2] }};"></i>
+            {{ c }}
+        </button>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modern Expense Ledger Card -->
+<div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
+    <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0" id="expensesTable">
+            <thead>
+                <tr>
+                    <th style="min-width: 200px;">Expense Details</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Notes</th>
+                    <th class="text-end pe-4" style="min-width: 120px;">Amount</th>
+                    <th class="text-center" style="width: 170px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in expenses %}
+            {% set cat_meta = cat_icons.get(e['category'], ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')) %}
+            <tr class="expense-row" data-category="{{ e['category'] }}">
+                <td>
+                    <div class="expense-title-cell">
+                        <div class="expense-icon-badge" style="background: {{ cat_meta[1] }}; color: {{ cat_meta[2] }};">
+                            <i class="bi {{ cat_meta[0] }}"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark mb-0">{{ e['title'] }}</div>
+                            <small class="text-muted d-md-none">{{ e['category'] }}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge-category {{ cat_meta[3] }}">
+                        <i class="bi {{ cat_meta[0] }}" style="font-size: 10px;"></i>
+                        {{ e['category'] }}
+                    </span>
+                </td>
+                <td class="text-secondary small">
+                    <i class="bi bi-calendar3 me-1 opacity-50"></i>
+                    {{ e['expense_date'] }}
+                </td>
+                <td>
+                    {% if e['notes'] %}
+                    <span class="text-secondary small" title="{{ e['notes'] }}">
+                        <i class="bi bi-chat-left-text me-1 opacity-50"></i>
+                        {{ e['notes'] }}
+                    </span>
+                    {% else %}
+                    <span class="text-muted opacity-50">-</span>
+                    {% endif %}
+                </td>
+                <td class="text-end pe-4">
+                    <span class="fw-bold text-dark" style="font-size: 1.02rem;">₹{{ "%.2f"|format(e['amount']) }}</span>
+                </td>
+                <td class="text-center">
+                    <div class="d-inline-flex gap-2">
+                        <a class="btn-action-edit" href="{{ url_for('edit_expense', expense_id=e['id']) }}" title="Edit transaction">
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Edit</span>
+                        </a>
+                        <form class="d-inline mb-0" method="POST" action="{{ url_for('delete_expense', expense_id=e['id']) }}">
+                            <button type="submit" class="btn-action-delete btn-delete-expense" title="Delete transaction">
+                                <i class="bi bi-trash3-fill"></i>
+                                <span>Delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr id="emptyDbRow">
+                <td colspan="6" class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center py-4">
+                        <div class="rounded-circle p-3 mb-3" style="background: #f1f5f9; color: #64748b; font-size: 28px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-inbox-fill"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">No expenses found</h5>
+                        <p class="text-muted small mb-3">You don't have any expense records matching the criteria.</p>
+                        {% if search or category %}
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" onclick="resetSearch()">
+                            Clear Filters
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('add_expense') }}" class="btn btn-primary btn-sm rounded-pill px-4">
+                            + Add Your First Expense
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+
+            <!-- Live Filter No Results Row -->
+            <tr id="noLiveResultsRow" style="display: none;">
+                <td colspan="6" class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center py-4">
+                        <div class="rounded-circle p-3 mb-3" style="background: #f1f5f9; color: #94a3b8; font-size: 28px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">No matching transactions</h5>
+                        <p class="text-muted small mb-3">Try adjusting your search terms or category filter.</p>
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" onclick="resetSearch()">
+                            Reset Filter
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function resetSearch() {
+    const searchInput = document.getElementById('expenseSearch');
+    const categorySelect = document.getElementById('expenseCategory');
+    if (window.location.search) {
+        window.location.href = "{{ url_for('expenses') }}";
+        return;
+    }
+    if (searchInput) searchInput.value = '';
+    if (categorySelect) categorySelect.value = '';
+    updateActiveCategoryPill('');
+    applyLiveFilter();
+}
+
+function updateActiveCategoryPill(selectedCat) {
+    const pills = document.querySelectorAll('.category-pill');
+    pills.forEach(pill => {
+        const cat = pill.getAttribute('data-cat') || '';
+        if (cat.toLowerCase() === selectedCat.toLowerCase()) {
+            pill.classList.add('active');
+        } else {
+            pill.classList.remove('active');
+        }
+    });
+}
+
+function applyLiveFilter() {
+    const searchInput = document.getElementById('expenseSearch');
+    const categorySelect = document.getElementById('expenseCategory');
+    const resetBtn = document.getElementById('resetFilterBtn');
+    const counterText = document.getElementById('expenseCounter');
+    const noResults = document.getElementById('noLiveResultsRow');
+    const rows = document.querySelectorAll('#expensesTable tbody tr.expense-row');
+
+    const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+    const cat = (categorySelect ? categorySelect.value : '').toLowerCase().trim();
+
+    let visibleCount = 0;
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowCategory = (row.getAttribute('data-category') || '').toLowerCase();
+
+        const matchesQuery = !query || text.includes(query);
+        const matchesCat = !cat || rowCategory === cat;
+
+        if (matchesQuery && matchesCat) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    if (noResults) {
+        noResults.style.display = (visibleCount === 0 && rows.length > 0) ? '' : 'none';
+    }
+
+    if (counterText && rows.length > 0) {
+        if (query || cat) {
+            counterText.textContent = `Showing ${visibleCount} of ${rows.length} records`;
+        } else {
+            counterText.textContent = `${rows.length} transaction${rows.length !== 1 ? 's' : ''}`;
+        }
+    }
+
+    if (resetBtn) {
+        resetBtn.style.display = (query || cat || window.location.search) ? 'inline-block' : 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('expenseSearch');
+    const categorySelect = document.getElementById('expenseCategory');
+    const resetBtn = document.getElementById('resetFilterBtn');
+    const pills = document.querySelectorAll('.category-pill');
+
+    // Sync pill if page loaded with category
+    if (categorySelect && categorySelect.value) {
+        updateActiveCategoryPill(categorySelect.value);
+    }
+
+    // Category pills click handler
+    pills.forEach(pill => {
+        pill.addEventListener('click', function() {
+            const cat = this.getAttribute('data-cat') || '';
+            if (categorySelect) {
+                categorySelect.value = cat;
+            }
+            updateActiveCategoryPill(cat);
+            applyLiveFilter();
+        });
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener('input', applyLiveFilter);
+        searchInput.addEventListener('keyup', applyLiveFilter);
+    }
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            updateActiveCategoryPill(this.value);
+            applyLiveFilter();
+        });
+    }
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetSearch);
+    }
+
+    // Smooth AJAX Delete
+    document.addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('.btn-delete-expense');
+        if (!deleteBtn) return;
+
+        e.preventDefault();
+        const form = deleteBtn.closest('form');
+        const row = deleteBtn.closest('tr.expense-row');
+
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" style="width: 12px; height: 12px;"></span>';
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(res => {
+            if (res.ok) {
+                if (row) {
+                    row.style.transition = 'all 0.25s ease';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(20px)';
+                    setTimeout(() => {
+                        row.remove();
+                        applyLiveFilter();
+                    }, 250);
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                form.submit();
+            }
+        }).catch(() => {
+            form.submit();
+        });
+    });
+});
+</script>
+{% endblock %}

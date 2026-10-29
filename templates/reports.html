@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Expense Reports - ExpenseTracker{% endblock %}
+{% block content %}
+
+{% set cat_icons = {
+    'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c', 'badge-cat-food'),
+    'Groceries': ('bi-basket2-fill', '#fef3c7', '#b45309', 'badge-cat-groceries'),
+    'Bills': ('bi-lightning-charge-fill', '#fffbeb', '#d97706', 'badge-cat-bills'),
+    'Travel': ('bi-airplane-fill', '#eff6ff', '#2563eb', 'badge-cat-travel'),
+    'Shopping': ('bi-bag-heart-fill', '#f0fdfa', '#0d9488', 'badge-cat-shopping'),
+    'Rent': ('bi-house-door-fill', '#e0f2fe', '#0284c7', 'badge-cat-rent'),
+    'Entertainment': ('bi-film', '#fff1f2', '#be123c', 'badge-cat-entertainment'),
+    'Health': ('bi-heart-pulse-fill', '#ecfdf5', '#059669', 'badge-cat-health'),
+    'Personal': ('bi-scissors', '#ecfeff', '#0891b2', 'badge-cat-personal'),
+    'Education': ('bi-mortarboard-fill', '#eef2ff', '#2563eb', 'badge-cat-education'),
+    'Investments': ('bi-graph-up-arrow', '#f0fdf4', '#16a34a', 'badge-cat-investments'),
+    'Other': ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')
+} %}
+
+<!-- Top Header Section -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge rounded-pill px-3 py-1" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 600;">
+                <i class="bi bi-file-earmark-bar-graph me-1"></i> Statement
+            </span>
+            <span class="text-muted small">
+                {{ expenses|length }} transaction{{ 's' if expenses|length != 1 else '' }}
+            </span>
+        </div>
+        <h2 class="fw-bold mb-1" style="letter-spacing: -0.02em;">Expense Report</h2>
+        <p class="text-muted mb-0 small">Audit ledger and consolidated spending breakdown.</p>
+    </div>
+    <button class="btn btn-outline-dark px-4 py-2 d-inline-flex align-items-center gap-2 rounded-pill shadow-xs" onclick="window.print()">
+        <i class="bi bi-printer"></i>
+        <span>Print Statement</span>
+    </button>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
+    <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th style="min-width: 180px;">Expense Details</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Notes</th>
+                    <th class="text-end pe-4" style="min-width: 120px;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in expenses %}
+            {% set cat_meta = cat_icons.get(e['category'], ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')) %}
+            <tr>
+                <td class="text-muted small fw-semibold">{{ loop.index }}</td>
+                <td>
+                    <div class="expense-title-cell">
+                        <div class="expense-icon-badge" style="background: {{ cat_meta[1] }}; color: {{ cat_meta[2] }}; width: 32px; height: 32px; font-size: 14px;">
+                            <i class="bi {{ cat_meta[0] }}"></i>
+                        </div>
+                        <span class="fw-bold text-dark">{{ e['title'] }}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge-category {{ cat_meta[3] }}">
+                        <i class="bi {{ cat_meta[0] }}" style="font-size: 10px;"></i>
+                        {{ e['category'] }}
+                    </span>
+                </td>
+                <td class="text-secondary small">{{ e['expense_date'] }}</td>
+                <td class="text-muted small">{{ e['notes'] or '-' }}</td>
+                <td class="text-end pe-4 fw-bold text-dark" style="font-size: 1.02rem;">₹{{ "%.2f"|format(e['amount']) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center py-5 text-muted">No report data available.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

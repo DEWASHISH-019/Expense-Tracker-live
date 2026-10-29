@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+{% block title %}Edit Expense - ExpenseTracker{% endblock %}
+{% block content %}
+<div class="form-card shadow-sm" style="max-width: 780px;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill px-3 py-1" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 0.78rem; font-weight: 700;">
+                <i class="bi bi-pencil me-1"></i> Edit Entry #{{ expense['id'] }}
+            </span>
+        </div>
+        <a href="{{ url_for('expenses') }}" class="btn btn-sm btn-outline-secondary py-1 px-2.5" style="font-size: 0.78rem;">
+            <i class="bi bi-arrow-left me-1"></i> Back to Ledger
+        </a>
+    </div>
+
+    <h2 class="fw-bold mb-1" style="letter-spacing: -0.02em;">Edit Expense</h2>
+    <p class="text-muted small mb-3">Modify this transaction in your ledger.</p>
+
+    <!-- Interactive Category Selector for Examples -->
+    <div class="mb-3">
+        <label class="form-label fw-bold small text-dark mb-2">
+            Categories & Presets
+        </label>
+        
+        <div class="cat-picker-nav" id="catPickerNav">
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Food' %}active{% endif %}" data-cat="Food"><i class="bi bi-cup-hot-fill" style="color:#ea580c;"></i> Food & Dining</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Groceries' %}active{% endif %}" data-cat="Groceries"><i class="bi bi-basket2-fill" style="color:#b45309;"></i> Groceries</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Bills' %}active{% endif %}" data-cat="Bills"><i class="bi bi-lightning-charge-fill" style="color:#d97706;"></i> Bills & Utilities</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Travel' %}active{% endif %}" data-cat="Travel"><i class="bi bi-airplane-fill" style="color:#2563eb;"></i> Travel & Fuel</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Shopping' %}active{% endif %}" data-cat="Shopping"><i class="bi bi-bag-heart-fill" style="color:#0d9488;"></i> Shopping</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Rent' %}active{% endif %}" data-cat="Rent"><i class="bi bi-house-door-fill" style="color:#0284c7;"></i> Rent & Housing</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Entertainment' %}active{% endif %}" data-cat="Entertainment"><i class="bi bi-film" style="color:#be123c;"></i> Entertainment</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Health' %}active{% endif %}" data-cat="Health"><i class="bi bi-heart-pulse-fill" style="color:#059669;"></i> Health</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Personal' %}active{% endif %}" data-cat="Personal"><i class="bi bi-scissors" style="color:#0891b2;"></i> Personal Care</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Education' %}active{% endif %}" data-cat="Education"><i class="bi bi-mortarboard-fill" style="color:#2563eb;"></i> Education</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Investments' %}active{% endif %}" data-cat="Investments"><i class="bi bi-graph-up-arrow" style="color:#16a34a;"></i> Investments</button>
+            <button type="button" class="cat-picker-btn {% if expense['category']=='Other' %}active{% endif %}" data-cat="Other"><i class="bi bi-tag-fill" style="color:#475569;"></i> Other</button>
+        </div>
+
+        <!-- Dynamic Examples Grid -->
+        <div class="examples-grid" id="examplesGrid"></div>
+
+        <!-- Auto Fill Toast Feedback -->
+        <div id="fillFeedback" class="fill-feedback-toast mb-3">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            <span id="fillFeedbackText">Preset loaded! You can modify details before updating.</span>
+        </div>
+    </div>
+
+    <hr class="my-4" style="border-color: #e2e8f0;">
+
+    <form method="POST" id="expenseForm">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label fw-semibold small text-secondary">
+                    Expense Title <span class="text-danger">*</span>
+                </label>
+                <input class="form-control" name="title" id="titleInput" value="{{ expense['title'] }}" required autocomplete="off" list="expenseSuggestions">
+                <datalist id="expenseSuggestions">
+                    <option value="Chai / Coffee">
+                    <option value="Breakfast & Snacks">
+                    <option value="Office Lunch">
+                    <option value="Dinner at Restaurant">
+                    <option value="Swiggy / Zomato Delivery">
+                    <option value="Supermarket Groceries">
+                    <option value="Milk & Dairy">
+                    <option value="Fruits & Vegetables">
+                    <option value="Electricity Bill">
+                    <option value="Wi-Fi Broadband">
+                    <option value="Mobile Recharge">
+                    <option value="LPG Cylinder">
+                    <option value="Auto / Cab Fare">
+                    <option value="Metro / Bus Pass">
+                    <option value="Petrol / Vehicle Fuel">
+                    <option value="Clothes / Apparel">
+                    <option value="Amazon / Online Order">
+                    <option value="Monthly House Rent">
+                    <option value="Movie & Popcorn">
+                    <option value="Netflix / Streaming">
+                    <option value="Pharmacy Medicines">
+                    <option value="Doctor Consultation">
+                    <option value="Haircut & Grooming">
+                    <option value="Gym Membership">
+                    <option value="Books & Stationery">
+                    <option value="Mutual Fund SIP">
+                </datalist>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold small text-secondary">
+                    Amount (₹) <span class="text-danger">*</span>
+                </label>
+                <input class="form-control fw-bold text-dark" name="amount" id="amountInput" type="number" min="0.01" step="0.01" value="{{ expense['amount'] }}" required>
+                <!-- Amount Presets -->
+                <div class="quick-tags-row mt-1.5" style="margin-top: 6px;">
+                    <button type="button" class="amount-btn" data-amt="50">₹50</button>
+                    <button type="button" class="amount-btn" data-amt="100">₹100</button>
+                    <button type="button" class="amount-btn" data-amt="250">₹250</button>
+                    <button type="button" class="amount-btn" data-amt="500">₹500</button>
+                    <button type="button" class="amount-btn" data-amt="1000">₹1k</button>
+                    <button type="button" class="amount-btn" data-amt="2000">₹2k</button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">
+                    Category <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" name="category" id="categorySelect" required>
+                    {% for c, label in [
+                        ("Food", "🍔 Food & Dining"),
+                        ("Groceries", "🛒 Groceries & Supplies"),
+                        ("Bills", "⚡ Bills & Utilities"),
+                        ("Travel", "🚕 Travel & Fuel"),
+                        ("Shopping", "🛍️ Shopping"),
+                        ("Rent", "🏠 Rent & Housing"),
+                        ("Entertainment", "🍿 Entertainment"),
+                        ("Health", "💊 Health & Medical"),
+                        ("Personal", "✂️ Personal Care"),
+                        ("Education", "📚 Education"),
+                        ("Investments", "📈 Investments & Savings"),
+                        ("Other", "📦 Other")
+                    ] %}
+                    <option value="{{ c }}" {% if expense['category']==c %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="form-label fw-semibold small text-secondary mb-1">
+                        Transaction Date <span class="text-danger">*</span>
+                    </label>
+                    <div class="d-flex gap-1 mb-1">
+                        <button type="button" class="btn btn-link p-0 text-decoration-none small text-muted" id="btnDateToday" style="font-size: 0.75rem;">Today</button>
+                        <span class="text-muted small" style="font-size: 0.75rem;">•</span>
+                        <button type="button" class="btn btn-link p-0 text-decoration-none small text-muted" id="btnDateYesterday" style="font-size: 0.75rem;">Yesterday</button>
+                    </div>
+                </div>
+                <input class="form-control" name="expense_date" id="dateInput" type="date" value="{{ expense['expense_date'] }}" required>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-semibold small text-secondary">
+                    Notes & Payment Details <span class="text-muted fw-normal">(Optional)</span>
+                </label>
+                <textarea class="form-control" name="notes" id="notesInput" rows="2" placeholder="Add remarks, shop name, or payment mode...">{{ expense['notes'] or '' }}</textarea>
+                
+                <!-- Note Tags -->
+                <div class="mt-2">
+                    <div class="d-flex align-items-center gap-1 mb-1">
+                        <span class="text-muted" style="font-size: 0.73rem; font-weight: 600;">Tags:</span>
+                    </div>
+                    <div class="quick-tags-row">
+                        <button type="button" class="quick-tag-btn" data-tag="Paid via UPI">💳 UPI / GPay</button>
+                        <button type="button" class="quick-tag-btn" data-tag="Paid in Cash">💵 Cash</button>
+                        <button type="button" class="quick-tag-btn" data-tag="Credit Card">💳 Credit Card</button>
+                        <button type="button" class="quick-tag-btn" data-tag="Split with Friends">🤝 Split with Friends</button>
+                        <button type="button" class="quick-tag-btn" data-tag="Office Reimbursable">💼 Office Work</button>
+                        <button type="button" class="quick-tag-btn" data-tag="Monthly Recurring">🔁 Monthly Recurring</button>
+                        <button type="button" class="quick-tag-btn" data-tag="Personal">👤 Personal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+                <i class="bi bi-check2-circle"></i>
+                <span>Update Expense</span>
+            </button>
+            <a href="{{ url_for('expenses') }}" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+const categoryExamples = {
+    'Food': [
+        { icon: '☕', title: 'Chai / Coffee', amount: 40, note: 'Evening tea with colleagues' },
+        { icon: '🥪', title: 'Breakfast & Snacks', amount: 80, note: 'Morning breakfast & juice' },
+        { icon: '🍛', title: 'Office Lunch', amount: 150, note: 'Cafeteria thali lunch' },
+        { icon: '🍕', title: 'Dinner with Friends', amount: 450, note: 'Weekend restaurant dinner' },
+        { icon: '🛵', title: 'Swiggy / Zomato', amount: 280, note: 'Online food order delivery' }
+    ],
+    'Groceries': [
+        { icon: '🛒', title: 'Supermarket Run', amount: 850, note: 'Weekly grocery essentials' },
+        { icon: '🥛', title: 'Milk & Dairy', amount: 60, note: 'Daily packet milk, curd, paneer' },
+        { icon: '🍎', title: 'Fruits & Vegetables', amount: 220, note: 'Fresh farm vegetables & fruits' },
+        { icon: '🌾', title: 'Monthly Ration', amount: 1400, note: 'Flour, rice, dal & cooking oil' }
+    ],
+    'Bills': [
+        { icon: '⚡', title: 'Electricity Bill', amount: 1250, note: 'Monthly electricity bill' },
+        { icon: '📶', title: 'Wi-Fi Broadband', amount: 799, note: 'Fiber broadband monthly recharge' },
+        { icon: '📱', title: 'Mobile Recharge', amount: 299, note: 'Unlimited mobile 5G plan' },
+        { icon: '🔥', title: 'LPG Gas Cylinder', amount: 920, note: 'Kitchen cylinder refill' },
+        { icon: '💧', title: 'Water & Maintenance', amount: 350, note: 'Building utility dues' }
+    ],
+    'Travel': [
+        { icon: '🚕', title: 'Auto / Cab Ride', amount: 140, note: 'Uber / Ola commute ride' },
+        { icon: '🚇', title: 'Metro / Bus Pass', amount: 200, note: 'City transit metro card recharge' },
+        { icon: '⛽', title: 'Petrol / Fuel', amount: 500, note: 'Two-wheeler / Car fuel top-up' },
+        { icon: '🚆', title: 'Train Ticket', amount: 450, note: 'IRCTC railway journey ticket' }
+    ],
+    'Shopping': [
+        { icon: '👕', title: 'Clothes / T-shirt', amount: 999, note: 'Casual clothing shopping' },
+        { icon: '👟', title: 'Footwear / Shoes', amount: 1200, note: 'Sports shoes & sandals' },
+        { icon: '📦', title: 'Amazon / Flipkart Order', amount: 650, note: 'Home essentials online delivery' },
+        { icon: '🎧', title: 'Tech Gadget / Cable', amount: 899, note: 'Earphones / phone accessory' }
+    ],
+    'Rent': [
+        { icon: '🏠', title: 'House Rent', amount: 12000, note: 'Monthly flat rent transfer' },
+        { icon: '🏢', title: 'Society Maintenance', amount: 1500, note: 'Apartment society maintenance' },
+        { icon: '🔧', title: 'Plumber / Electrician', amount: 400, note: 'House repair service charge' }
+    ],
+    'Entertainment': [
+        { icon: '🍿', title: 'Movie Ticket & Snack', amount: 450, note: 'Cinema hall ticket with popcorn' },
+        { icon: '📺', title: 'Netflix / OTT Subscription', amount: 199, note: 'Monthly streaming subscription' },
+        { icon: '🎳', title: 'Weekend Hangout', amount: 700, note: 'Activity & outing with buddies' },
+        { icon: '🎮', title: 'Gaming / Arcade', amount: 350, note: 'Gaming credits & play zone' }
+    ],
+    'Health': [
+        { icon: '💊', title: 'Pharmacy Medicines', amount: 250, note: 'Prescription medicines at medical store' },
+        { icon: '🩺', title: 'Doctor Consultation', amount: 500, note: 'Clinic consultation checkup' },
+        { icon: '🔬', title: 'Diagnostic Blood Test', amount: 650, note: 'Routine health checkup tests' },
+        { icon: '🦷', title: 'Dental Clinic', amount: 800, note: 'Teeth cleaning / checkup' }
+    ],
+    'Personal': [
+        { icon: '✂️', title: 'Haircut & Salon', amount: 250, note: 'Haircut, wash & grooming' },
+        { icon: '🧴', title: 'Skincare & Toiletries', amount: 450, note: 'Face wash, deodorant & shampoo' },
+        { icon: '🏋️', title: 'Gym Membership', amount: 1200, note: 'Monthly fitness gym pass' }
+    ],
+    'Education': [
+        { icon: '📚', title: 'Online Course / Tutorial', amount: 999, note: 'Skill development certification' },
+        { icon: '📖', title: 'Books & Stationery', amount: 350, note: 'Notebooks, pens & novel' },
+        { icon: '🎓', title: 'Exam / College Fees', amount: 2500, note: 'Registration & exam fees' }
+    ],
+    'Investments': [
+        { icon: '📈', title: 'Mutual Fund SIP', amount: 2500, note: 'Monthly automated SIP installment' },
+        { icon: '🪙', title: 'Stock Investment', amount: 3000, note: 'Equity share purchase' },
+        { icon: '🏦', title: 'Emergency Savings Deposit', amount: 5000, note: 'Deposit into reserve account' }
+    ],
+    'Other': [
+        { icon: '🎁', title: 'Birthday / Festival Gift', amount: 600, note: 'Gift package for celebration' },
+        { icon: '🤝', title: 'Charity / Donation', amount: 200, note: 'Voluntary contribution' },
+        { icon: '📦', title: 'Miscellaneous Expense', amount: 150, note: 'Incidental small expense' }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('titleInput');
+    const amountInput = document.getElementById('amountInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const dateInput = document.getElementById('dateInput');
+    const notesInput = document.getElementById('notesInput');
+    const examplesGrid = document.getElementById('examplesGrid');
+    const fillFeedback = document.getElementById('fillFeedback');
+    const fillFeedbackText = document.getElementById('fillFeedbackText');
+
+    function renderCategoryExamples(cat) {
+        const examples = categoryExamples[cat] || [];
+        examplesGrid.innerHTML = '';
+        
+        examples.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'example-chip';
+            card.innerHTML = `
+                <div class="example-chip-header">
+                    <span class="example-chip-title">${item.icon} ${item.title}</span>
+                    <span class="example-chip-amount">₹${item.amount}</span>
+                </div>
+                <span class="example-chip-note">${item.note}</span>
+            `;
+            
+            card.addEventListener('click', function() {
+                titleInput.value = item.title;
+                amountInput.value = item.amount;
+                categorySelect.value = cat;
+                notesInput.value = item.note;
+                
+                fillFeedbackText.textContent = `✓ Auto-filled: "${item.title}" (₹${item.amount} in ${cat}). You can modify before updating!`;
+                fillFeedback.style.display = 'block';
+                
+                card.style.borderColor = '#2563eb';
+                card.style.background = '#eff6ff';
+                setTimeout(() => {
+                    card.style.borderColor = '';
+                    card.style.background = '';
+                }, 800);
+            });
+            
+            examplesGrid.appendChild(card);
+        });
+    }
+
+    // Initialize with current expense category
+    const initialCategory = categorySelect.value || 'Food';
+    renderCategoryExamples(initialCategory);
+
+    // Category button clicks
+    const catPickerBtns = document.querySelectorAll('.cat-picker-btn');
+    catPickerBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            catPickerBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const selectedCat = this.getAttribute('data-cat');
+            categorySelect.value = selectedCat;
+            renderCategoryExamples(selectedCat);
+        });
+    });
+
+    categorySelect.addEventListener('change', function() {
+        const selectedCat = this.value;
+        catPickerBtns.forEach(btn => {
+            if (btn.getAttribute('data-cat') === selectedCat) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        renderCategoryExamples(selectedCat);
+    });
+
+    // Amount preset buttons
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            amountInput.value = this.getAttribute('data-amt');
+            amountInput.focus();
+        });
+    });
+
+    // Date Quick Helpers
+    document.getElementById('btnDateToday').addEventListener('click', function() {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    });
+
+    document.getElementById('btnDateYesterday').addEventListener('click', function() {
+        const y = new Date();
+        y.setDate(y.getDate() - 1);
+        dateInput.value = y.toISOString().split('T')[0];
+    });
+
+    // Note Tag Buttons
+    document.querySelectorAll('.quick-tag-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tag = this.getAttribute('data-tag');
+            const currentVal = notesInput.value.trim();
+            if (!currentVal) {
+                notesInput.value = tag;
+            } else if (!currentVal.includes(tag)) {
+                notesInput.value = currentVal + ' • ' + tag;
+            }
+            notesInput.focus();
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block title %}Spending Insights - ExpenseTracker{% endblock %}
+{% block content %}
+
+{% set cat_icons = {
+    'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c'),
+    'Groceries': ('bi-basket2-fill', '#fef3c7', '#b45309'),
+    'Bills': ('bi-lightning-charge-fill', '#fffbeb', '#d97706'),
+    'Travel': ('bi-airplane-fill', '#eff6ff', '#2563eb'),
+    'Shopping': ('bi-bag-heart-fill', '#f0fdfa', '#0d9488'),
+    'Rent': ('bi-house-door-fill', '#e0f2fe', '#0284c7'),
+    'Entertainment': ('bi-film', '#fff1f2', '#be123c'),
+    'Health': ('bi-heart-pulse-fill', '#ecfdf5', '#059669'),
+    'Personal': ('bi-scissors', '#ecfeff', '#0891b2'),
+    'Education': ('bi-mortarboard-fill', '#eef2ff', '#2563eb'),
+    'Investments': ('bi-graph-up-arrow', '#f0fdf4', '#16a34a'),
+    'Other': ('bi-tag-fill', '#f8fafc', '#475569')
+} %}
+
+<!-- Top Header Section -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge rounded-pill px-3 py-1" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 0.8rem; font-weight: 700;">
+                <i class="bi bi-graph-up-arrow me-1"></i> Spending Analytics
+            </span>
+            <span class="text-muted small">• Predictive Insights</span>
+        </div>
+        <h2 class="fw-bold mb-1" style="letter-spacing: -0.02em;">Spending Insights</h2>
+        <p class="text-muted mb-0 small">Pattern recognition, trajectory forecasting, and personalized financial tips.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ url_for('expenses') }}" class="btn btn-outline-primary px-3 py-2 d-inline-flex align-items-center gap-2" style="font-size: 0.88rem;">
+            <i class="bi bi-receipt"></i>
+            <span>View Ledger</span>
+        </a>
+        <a href="{{ url_for('add_expense') }}" class="btn btn-primary px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" style="font-size: 0.88rem;">
+            <i class="bi bi-plus-lg"></i>
+            <span>Add Expense</span>
+        </a>
+    </div>
+</div>
+
+<!-- Primary 3-Metric KPI Grid -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card d-flex align-items-center justify-content-between p-4">
+            <div>
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em;">Total Outflow</span>
+                <h3 class="fw-bold my-1 text-dark">₹{{ "%.2f"|format(result.total) }}</h3>
+                <small class="text-muted">Across all recorded transactions</small>
+            </div>
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; font-size: 22px;">
+                <i class="bi bi-wallet2"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card d-flex align-items-center justify-content-between p-4">
+            <div>
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em;">Average Ticket</span>
+                <h3 class="fw-bold my-1 text-dark">₹{{ "%.2f"|format(result.average) }}</h3>
+                <small class="text-muted">{{ 'Higher-ticket balance' if result.average > 1000 else 'Balanced transaction size' }}</small>
+            </div>
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; font-size: 22px;">
+                <i class="bi bi-calculator"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card d-flex align-items-center justify-content-between p-4">
+            <div>
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em;">Spending Velocity</span>
+                <div class="d-flex align-items-center gap-2 my-1">
+                    <h3 class="fw-bold mb-0 text-dark">{{ result.trend }}</h3>
+                    {% if result.trend == 'Increasing' %}
+                    <span class="badge rounded-pill bg-danger-subtle text-danger px-2 py-1 small">
+                        <i class="bi bi-graph-up-arrow"></i> Upward
+                    </span>
+                    {% elif result.trend == 'Decreasing' %}
+                    <span class="badge rounded-pill bg-success-subtle text-success px-2 py-1 small">
+                        <i class="bi bi-graph-down-arrow"></i> Downward
+                    </span>
+                    {% else %}
+                    <span class="badge rounded-pill bg-primary-subtle text-primary px-2 py-1 small">
+                        <i class="bi bi-activity"></i> Balanced
+                    </span>
+                    {% endif %}
+                </div>
+                <small class="text-muted">Month-over-month trajectory</small>
+            </div>
+            <div class="expense-icon-badge" style="background: #ecfdf5; color: #059669; width: 48px; height: 48px; font-size: 22px;">
+                <i class="bi bi-graph-up"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deep Insight Feature Cards -->
+<div class="row g-4 mb-4">
+    <!-- Top Category Breakdown Card -->
+    <div class="col-lg-6">
+        <div class="insight-card p-4 d-flex flex-column justify-content-between" style="border-radius: 20px;">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge rounded-pill px-3 py-1" style="background: #fff7ed; color: #ea580c; font-weight: 700; font-size: 0.75rem;">
+                        <i class="bi bi-pie-chart-fill me-1"></i> Concentration Analysis
+                    </span>
+                    {% if result.total > 0 %}
+                    {% set pct = (result.top_category_amount / result.total * 100)|round(1) %}
+                    <span class="text-muted small fw-semibold">{{ pct }}% of total</span>
+                    {% else %}
+                    {% set pct = 0 %}
+                    {% endif %}
+                </div>
+
+                <h5 class="fw-bold mb-1 text-dark">Top Spending Category</h5>
+                <p class="text-muted small mb-3">Category consuming the largest share of your budget.</p>
+
+                {% set cat_info = cat_icons.get(result.top_category, ('bi-tag-fill', '#f8fafc', '#475569')) %}
+                <div class="d-flex align-items-center gap-3 p-3 rounded-4 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div class="expense-icon-badge" style="background: {{ cat_info[1] }}; color: {{ cat_info[2] }}; width: 44px; height: 44px; font-size: 20px;">
+                        <i class="bi {{ cat_info[0] }}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold mb-0 text-dark">{{ result.top_category }}</h4>
+                            <span class="fw-bold text-dark fs-5">₹{{ "%.2f"|format(result.top_category_amount) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Share of Outflow</span>
+                        <span class="fw-bold text-dark">{{ pct }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px; border-radius: 9999px; background: #e2e8f0;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ pct }}%; background: #2563eb; border-radius: 9999px;"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-muted small mb-0 mt-3 pt-2 border-top">
+                <i class="bi bi-info-circle me-1 text-primary"></i>
+                {% if pct >= 40 %}
+                High category concentration detected. Setting an alert or monthly cap is recommended.
+                {% else %}
+                Healthy category distribution. No single category dominates your entire budget.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Forecasting & Predictive Model Card -->
+    <div class="col-lg-6">
+        <div class="insight-card p-4 d-flex flex-column justify-content-between" style="border-radius: 20px;">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge rounded-pill px-3 py-1" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; font-size: 0.75rem;">
+                        <i class="bi bi-graph-up me-1"></i> Statistical Model
+                    </span>
+                    <span class="text-muted small fw-semibold">Next Month Prediction</span>
+                </div>
+
+                <h5 class="fw-bold mb-1 text-dark">Forecasted Outflow</h5>
+                <p class="text-muted small mb-3">Predictive regression projection for the upcoming calendar month.</p>
+
+                {% if result.prediction is not none %}
+                <div class="p-4 rounded-4 text-center mb-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                    <div class="small text-muted text-uppercase fw-semibold mb-1" style="letter-spacing: 0.05em;">Estimated Expenditure</div>
+                    <h2 class="fw-extrabold text-dark mb-2" style="font-size: 2.4rem; font-weight: 800;">₹{{ "%.2f"|format(result.prediction) }}</h2>
+                    <div class="d-inline-flex align-items-center gap-1 badge rounded-pill px-3 py-1" style="background: #ffffff; color: #475569; border: 1px solid #e2e8f0; font-size: 0.78rem;">
+                        <i class="bi bi-shield-check text-success"></i> Linear Regression Estimate
+                    </div>
+                </div>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle me-1 text-success"></i>
+                    Forecast calculated based on multi-month historical momentum and seasonal factors.
+                </p>
+                {% else %}
+                <div class="p-3 rounded-4 text-center mb-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                    <div class="rounded-circle p-2 mx-auto mb-2" style="background: #f1f5f9; color: #0f172a; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                        <i class="bi bi-calendar-range"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1">Model Calibration in Progress</h6>
+                    <p class="text-muted small mb-0 px-2" style="line-height: 1.5;">
+                        The machine learning regression model requires transaction logs across at least <strong>2 distinct calendar months</strong> to calibrate spending velocity.
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-muted small border-top pt-2">
+                    <i class="bi bi-lightbulb text-warning"></i>
+                    <span>Continue recording your transactions to automatically activate forecasting.</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Personalized Recommendations Section -->
+<div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle p-1" style="background: #eff6ff; color: #2563eb; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-lightbulb-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-dark">Personalized Recommendations</h5>
+                </div>
+                <p class="text-muted small mb-0 mt-1">Rule-based and heuristic insights tailored to your current habits.</p>
+            </div>
+            <span class="badge rounded-pill bg-light text-secondary border px-3 py-1 small">
+                {{ result.advice|length }} Tip{{ 's' if result.advice|length != 1 else '' }}
+            </span>
+        </div>
+
+        <div class="row g-3">
+            {% for advice in result.advice %}
+            <div class="col-md-6">
+                <div class="p-3 rounded-4 d-flex align-items-start gap-3 h-100" style="background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02); transition: transform 0.2s ease;">
+                    <div class="rounded-circle mt-1 flex-shrink-0" style="background: #ecfdf5; color: #059669; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 15px;">
+                        <i class="bi bi-check-lg fw-bold"></i>
+                    </div>
+                    <div>
+                        <span class="badge rounded-pill px-2 py-0 mb-1" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 0.72rem; font-weight: 600;">
+                            Insight #{{ loop.index }}
+                        </span>
+                        <p class="mb-0 text-dark fw-medium small" style="line-height: 1.6;">
+                            {{ advice }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

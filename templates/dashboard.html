@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - ExpenseTracker{% endblock %}
+{% block content %}
+{% set cat_icons = {
+    'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c', 'badge-cat-food'),
+    'Groceries': ('bi-basket2-fill', '#fef3c7', '#b45309', 'badge-cat-groceries'),
+    'Bills': ('bi-lightning-charge-fill', '#fffbeb', '#d97706', 'badge-cat-bills'),
+    'Travel': ('bi-airplane-fill', '#eff6ff', '#2563eb', 'badge-cat-travel'),
+    'Shopping': ('bi-bag-heart-fill', '#f0fdfa', '#0d9488', 'badge-cat-shopping'),
+    'Rent': ('bi-house-door-fill', '#e0f2fe', '#0284c7', 'badge-cat-rent'),
+    'Entertainment': ('bi-film', '#fff1f2', '#be123c', 'badge-cat-entertainment'),
+    'Health': ('bi-heart-pulse-fill', '#ecfdf5', '#059669', 'badge-cat-health'),
+    'Personal': ('bi-scissors', '#ecfeff', '#0891b2', 'badge-cat-personal'),
+    'Education': ('bi-mortarboard-fill', '#eef2ff', '#2563eb', 'badge-cat-education'),
+    'Investments': ('bi-graph-up-arrow', '#f0fdf4', '#16a34a', 'badge-cat-investments'),
+    'Other': ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')
+} %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="text-muted mb-1 small">Welcome back, {{ session.get('user_name') }}</p>
+        <h2 class="fw-bold mb-0" style="letter-spacing: -0.02em;">Financial Dashboard</h2>
+    </div>
+    <a href="{{ url_for('add_expense') }}" class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Expense</span>
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span>Total Expenses</span>
+                <h3>₹{{ "%.2f"|format(total) }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 44px; height: 44px; font-size: 20px;">
+                <i class="bi bi-wallet2"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span>This Month</span>
+                <h3>₹{{ "%.2f"|format(monthly_total) }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #ecfdf5; color: #059669; width: 44px; height: 44px; font-size: 20px;">
+                <i class="bi bi-calendar2-check"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span>Transactions</span>
+                <h3>{{ count }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 44px; height: 44px; font-size: 20px;">
+                <i class="bi bi-receipt"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span>Top Category</span>
+                <h3 style="font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ highest_category }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #fff7ed; color: #ea580c; width: 44px; height: 44px; font-size: 20px;">
+                <i class="bi bi-pie-chart-fill"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="chart-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Category Breakdown</h5>
+                    <small class="text-muted">Distribution of total expenses</small>
+                </div>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="chart-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Monthly Spending</h5>
+                    <small class="text-muted">Trends across months</small>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Chart type toggle">
+                    <button type="button" class="btn btn-outline-primary active" id="btnChartBar">Bar</button>
+                    <button type="button" class="btn btn-outline-primary" id="btnChartLine">Line</button>
+                </div>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mt-4" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
+    <div class="card-body p-0">
+        <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+            <div>
+                <h5 class="mb-0 fw-bold">Recent Expenses</h5>
+                <small class="text-muted">Your latest recorded transactions</small>
+            </div>
+            <a href="{{ url_for('expenses') }}" class="btn-view-all">
+                <span>View all</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+                </svg>
+            </a>
+        </div>
+        {% if expenses %}
+        <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="min-width: 180px;">Title</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th class="text-end pe-4">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in expenses %}
+            {% set cat_meta = cat_icons.get(e['category'], ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')) %}
+            <tr>
+                <td>
+                    <div class="expense-title-cell">
+                        <div class="expense-icon-badge" style="background: {{ cat_meta[1] }}; color: {{ cat_meta[2] }}; width: 32px; height: 32px; font-size: 14px;">
+                            <i class="bi {{ cat_meta[0] }}"></i>
+                        </div>
+                        <span class="fw-bold text-dark">{{ e['title'] }}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge-category {{ cat_meta[3] }}">
+                        <i class="bi {{ cat_meta[0] }}" style="font-size: 10px;"></i>
+                        {{ e['category'] }}
+                    </span>
+                </td>
+                <td class="text-secondary small">{{ e['expense_date'] }}</td>
+                <td class="text-end pe-4 fw-bold text-dark">₹{{ "%.2f"|format(e['amount']) }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <p class="mb-2">No expenses recorded yet.</p>
+            <a href="{{ url_for('add_expense') }}" class="btn btn-primary btn-sm rounded-pill px-4">+ Add Expense</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}ExpenseTracker - Simple & Clean Expense Tracking{% endblock %}
+{% block content %}
+
+<!-- Open Clean Hero (No enclosing box) -->
+<section class="hero-open py-3 py-lg-4 mb-5">
+    <div class="row align-items-center g-5">
+        <!-- Left: Open Typography & CTA -->
+        <div class="col-lg-6">
+            <div class="hero-badge-pill mb-3">
+                <span class="badge-dot"></span>
+                <span>Simple personal finance</span>
+            </div>
+            
+            <h1 class="hero-title-open mb-3">
+                Track your money.<br>
+                <span>Keep it simple.</span>
+            </h1>
+
+            <p class="hero-desc-open mb-4">
+                A clean, distraction-free expense tracker. Log daily spending, set monthly budgets, and see where your money actually goes. 100% private, stored locally on your device.
+            </p>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                <a href="{{ url_for('register') }}" class="btn-hero-primary">
+                    <span>Start Tracking — Free</span>
+                    <i class="bi bi-arrow-right-short fs-5"></i>
+                </a>
+                <a href="{{ url_for('login') }}" class="btn-hero-secondary">
+                    <span>Sign In</span>
+                </a>
+            </div>
+
+            <div class="hero-trust-row">
+                <span><i class="bi bi-check2 text-primary"></i> 100% Free forever</span>
+                <span><i class="bi bi-shield-check text-primary"></i> Local SQLite</span>
+                <span><i class="bi bi-lock text-primary"></i> Zero tracking</span>
+            </div>
+        </div>
+
+        <!-- Right: Authentic Real Ledger Showcase -->
+        <div class="col-lg-6">
+            <div class="ledger-preview-window">
+                <!-- Window Header -->
+                <div class="window-header">
+                    <div class="window-dots">
+                        <span class="dot-red"></span>
+                        <span class="dot-yellow"></span>
+                        <span class="dot-green"></span>
+                    </div>
+                    <div class="window-title">expensetracker.app/dashboard</div>
+                    <div class="window-badge">
+                        <span class="status-dot"></span> On track
+                    </div>
+                </div>
+
+                <!-- Window Body: Real spending ledger preview -->
+                <div class="window-body">
+                    <!-- Quick Stats Bar -->
+                    <div class="preview-stats-bar">
+                        <div class="preview-stat-item">
+                            <span class="stat-meta">Monthly Spending</span>
+                            <div class="stat-num">₹8,420<span class="stat-cents">.00</span></div>
+                        </div>
+                        <div class="preview-stat-item">
+                            <span class="stat-meta">Remaining Budget</span>
+                            <div class="stat-num text-success">₹3,580<span class="stat-cents">.00</span></div>
+                        </div>
+                        <div class="preview-stat-item">
+                            <span class="stat-meta">Budget Limit</span>
+                            <div class="stat-num text-muted">₹12,000</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="preview-budget-progress">
+                        <div class="progress-bar-fill" style="width: 70%;"></div>
+                    </div>
+
+                    <!-- Clean Transactions Table (Natural & Realistic) -->
+                    <div class="table-responsive mt-3">
+                        <table class="table table-preview mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="item-icon item-coffee"><i class="bi bi-cup-hot"></i></span>
+                                            <span class="fw-semibold text-dark">Blue Tokai Coffee</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge-cat-pill">Food</span></td>
+                                    <td class="text-muted small">Today, 10:30 AM</td>
+                                    <td class="text-end fw-semibold text-dark">-₹280.00</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="item-icon item-util"><i class="bi bi-lightning-charge"></i></span>
+                                            <span class="fw-semibold text-dark">Electricity Bill</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge-cat-pill">Bills</span></td>
+                                    <td class="text-muted small">Yesterday</td>
+                                    <td class="text-end fw-semibold text-dark">-₹2,100.00</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="item-icon item-shop"><i class="bi bi-cart2"></i></span>
+                                            <span class="fw-semibold text-dark">Blinkit Groceries</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge-cat-pill">Shopping</span></td>
+                                    <td class="text-muted small">Mar 10</td>
+                                    <td class="text-end fw-semibold text-dark">-₹1,420.00</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="item-icon item-income"><i class="bi bi-arrow-down-left"></i></span>
+                                            <span class="fw-semibold text-dark">Freelance Payout</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge-cat-pill bg-success-subtle text-success border-0">Income</span></td>
+                                    <td class="text-muted small">Mar 08</td>
+                                    <td class="text-end fw-semibold text-success">+₹15,000.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Clean Ledger Footer -->
+                    <div class="ledger-footer">
+                        <span class="text-muted small">Showing 4 recent entries</span>
+                        <a href="{{ url_for('register') }}" class="ledger-link">Open Dashboard →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3 Clean Minimalist Feature Columns (No giant box containers) -->
+<section class="features-section py-4 border-top">
+    <div class="row g-4 py-3">
+        <div class="col-md-4">
+            <div class="feature-item">
+                <div class="feature-icon-clean">
+                    <i class="bi bi-lightning-charge"></i>
+                </div>
+                <h4 class="feature-title">Quick Logging</h4>
+                <p class="feature-desc">Add daily transactions in seconds with custom categories, dates, and clear notes.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-item">
+                <div class="feature-icon-clean">
+                    <i class="bi bi-pie-chart"></i>
+                </div>
+                <h4 class="feature-title">Clear Monthly Budgets</h4>
+                <p class="feature-desc">Set spending targets and see visual breakdowns of exactly where your money goes.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-item">
+                <div class="feature-icon-clean">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h4 class="feature-title">100% Private &amp; Offline</h4>
+                <p class="feature-desc">Stored in a local SQLite database directly on your device. Zero cloud sync or tracking.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
