@@ -7,12 +7,22 @@ def analyze_spending(rows):
     total_spent = sum(row["amount"] for row in rows)
     
     category_totals = defaultdict(float)
+    monthly_totals = defaultdict(float)
+    
     for row in rows:
         category_totals[row["category"]] += row["amount"]
+        # Extract YYYY-MM from the date string
+        month_key = row["expense_date"][:7] 
+        monthly_totals[month_key] += row["amount"]
         
     top_category = max(category_totals, key=category_totals.get) if category_totals else "None"
-    average_expense = total_spent / len(rows)
-    predicted_next_month = round(total_spent + average_expense, 2)
+    
+    # Base prediction on the most recent month with recorded expenses
+    if monthly_totals:
+        latest_month = max(monthly_totals.keys())
+        predicted_next_month = round(monthly_totals[latest_month], 2)
+    else:
+        predicted_next_month = 0.0
 
     return {
         "total_spent": round(total_spent, 2),
