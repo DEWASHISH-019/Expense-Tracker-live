@@ -103,14 +103,27 @@ function renderMonthlyChart(data, chartType = 'bar') {
         type: chartType,
         data: {
             labels: formattedLabels,
-            datasets: [{
-                label: "Monthly Total", data: data.monthly_totals, backgroundColor: bgGradient,
-                borderColor: '#2563eb', borderWidth: chartType === 'line' ? 3 : 1.5,
-                borderRadius: chartType === 'bar' ? 10 : 0, maxBarThickness: 54, fill: chartType === 'line',
-                tension: 0.4, pointRadius: chartType === 'line' ? 6 : 0, pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#2563eb', pointBorderWidth: 3, pointHoverRadius: 9,
-                pointHoverBackgroundColor: '#2563eb', pointHoverBorderColor: '#ffffff', pointHoverBorderWidth: 2
+                        datasets: [{
+                label: "Monthly Total", 
+                data: data.monthly_totals, 
+                backgroundColor: bgGradient,
+                borderColor: '#2563eb', 
+                borderWidth: chartType === 'line' ? 3 : 1.5,
+                borderRadius: chartType === 'bar' ? 10 : 0, 
+                borderSkipped: false, /* This brings back the bottom rounded corners */
+                maxBarThickness: 54, 
+                fill: chartType === 'line',
+                tension: 0.4, 
+                pointRadius: chartType === 'line' ? 6 : 0, 
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#2563eb', 
+                pointBorderWidth: 3, 
+                pointHoverRadius: 9,
+                pointHoverBackgroundColor: '#2563eb', 
+                pointHoverBorderColor: '#ffffff', 
+                pointHoverBorderWidth: 2
             }]
+
         },
         options: {
             responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
