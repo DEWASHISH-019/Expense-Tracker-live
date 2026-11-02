@@ -323,12 +323,14 @@ def chart_data():
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
+    # 1. Lifetime category totals
     cursor.execute(
         "SELECT category, SUM(amount) AS total FROM expenses WHERE user_id = %s GROUP BY category ORDER BY total DESC",
         (session["user_id"],)
     )
     rows = cursor.fetchall()
 
+    # 2. Monthly trend
     cursor.execute("""
         SELECT SUBSTRING(expense_date, 1, 7) AS month, SUM(amount) AS total
         FROM expenses
@@ -338,12 +340,25 @@ def chart_data():
     """, (session["user_id"],))
     monthly = cursor.fetchall()
     
+    # 3. Current month category totals
+    current_month = datetime.now().strftime("%Y-%m")
+    cursor.execute("""
+        SELECT category, SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = %s AND expense_date LIKE %s
+        GROUP BY category
+        ORDER BY total DESC
+    """, (session["user_id"], f"{current_month}%"))
+    current_month_rows = cursor.fetchall()
+    
     cursor.close()
     conn.close()
 
     return jsonify({
         "categories": [r["category"] for r in rows],
         "category_totals": [round(r["total"], 2) for r in rows],
+        "current_month_categories": [r["category"] for r in current_month_rows],
+        "current_month_category_totals": [round(r["total"], 2) for r in current_month_rows],
         "months": [r["month"] for r in monthly],
         "monthly_totals": [round(r["total"], 2) for r in monthly]
     })
