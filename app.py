@@ -306,16 +306,40 @@ def delete_expense(expense_id):
 @app.route("/reports")
 @login_required
 def reports():
+    from datetime import timedelta # Imported here to handle date math
+    
+    filter_type = request.args.get("filter", "all")
+    
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute(
-        "SELECT * FROM expenses WHERE user_id = %s ORDER BY expense_date",
-        (session["user_id"],)
-    )
+    
+    query = "SELECT * FROM expenses WHERE user_id = %s"
+    params = [session["user_id"]]
+    
+    now = datetime.now()
+    
+    if filter_type == "this_month":
+        query += " AND expense_date LIKE %s"
+        params.append(f"{now.strftime('%Y-%m')}%")
+    elif filter_type == "last_month":
+        last_month = (now.replace(day=1) - timedelta(days=1))
+        query += " AND expense_date LIKE %s"
+        params.append(f"{last_month.strftime('%Y-%m')}%")
+    elif filter_type == "last_3_months":
+        query += " AND expense_date >= %s"
+        params.append((now - timedelta(days=90)).strftime('%Y-%m-%d'))
+    elif filter_type == "last_6_months":
+        query += " AND expense_date >= %s"
+        params.append((now - timedelta(days=180)).strftime('%Y-%m-%d'))
+        
+    query += " ORDER BY expense_date DESC"
+    
+    cursor.execute(query, params)
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("reports.html", expenses=rows)
+    
+    return render_template("reports.html", expenses=rows, current_filter=filter_type)
 
 @app.route("/api/chart-data")
 @login_required
