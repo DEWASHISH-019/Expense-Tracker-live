@@ -1,6 +1,39 @@
 {% extends "base.html" %}
 {% block title %}Expense Reports - ExpenseTracker{% endblock %}
 {% block content %}
+<style>
+@media print {
+    @page { margin: 0.5cm; }
+    body { background: white !important; }
+    
+    /* Override fixed column widths */
+    th[style], td[style] {
+        min-width: 0 !important;
+        width: auto !important;
+    }
+    
+    /* Shrink padding and font size for the printed page */
+    .table-custom th, .table-custom td {
+        padding: 0.3rem !important;
+        font-size: 0.85rem !important;
+        white-space: normal !important;
+    }
+    
+    /* Shrink the category icons to save horizontal space */
+    .expense-icon-badge {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 12px !important;
+    }
+    
+    /* Remove the card border and shadow for a cleaner print */
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+</style>
+
 
 {% set cat_icons = {
     'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c', 'badge-cat-food'),
