@@ -31,10 +31,19 @@
         <h2 class="fw-bold mb-1" style="letter-spacing: -0.02em;">Expense Report</h2>
         <p class="text-muted mb-0 small">Audit ledger and consolidated spending breakdown.</p>
     </div>
-    <button class="btn btn-outline-dark px-4 py-2 d-inline-flex align-items-center gap-2 rounded-pill shadow-xs" onclick="window.print()">
-        <i class="bi bi-printer"></i>
-        <span>Print Statement</span>
-    </button>
+        <div class="d-flex flex-wrap align-items-center gap-2 d-print-none">
+        <select class="form-select shadow-none rounded-pill px-3 py-2" style="width: auto; border: 1px solid #e2e8f0; font-weight: 500; cursor: pointer; font-size: 0.9rem;" onchange="window.location.href='?filter='+this.value">
+            <option value="all" {% if current_filter == 'all' %}selected{% endif %}>All Time</option>
+            <option value="this_month" {% if current_filter == 'this_month' %}selected{% endif %}>This Month</option>
+            <option value="last_month" {% if current_filter == 'last_month' %}selected{% endif %}>Last Month</option>
+            <option value="last_3_months" {% if current_filter == 'last_3_months' %}selected{% endif %}>Last 3 Months</option>
+            <option value="last_6_months" {% if current_filter == 'last_6_months' %}selected{% endif %}>Last 6 Months</option>
+        </select>
+        <button class="btn btn-outline-dark px-4 py-2 d-inline-flex align-items-center gap-2 rounded-pill shadow-xs" onclick="window.print()">
+            <i class="bi bi-printer"></i>
+            <span>Print Statement</span>
+        </button>
+    </div>
 </div>
 
 <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
