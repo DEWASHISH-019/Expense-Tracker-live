@@ -75,20 +75,8 @@
 </div>
 
 <div class="row g-4">
+    <!-- Category Breakdown Pie Chart -->
     <div class="col-lg-6">
-        <div class="chart-card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h5 class="fw-bold mb-0">Category Breakdown</h5>
-                    <small class="text-muted">Distribution of total expenses</small>
-                </div>
-            </div>
-            <div style="position: relative; height: 280px;">
-                <canvas id="categoryChart"></canvas>
-            </div>
-        </div>
-    </div>
-        <div class="col-lg-6">
         <div class="chart-card p-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -105,6 +93,26 @@
             </div>
         </div>
     </div>
+    
+    <!-- Monthly Spending Bar/Line Chart -->
+    <div class="col-lg-6">
+        <div class="chart-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Monthly Spending</h5>
+                    <small class="text-muted">Trends across months</small>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Chart type toggle">
+                    <button type="button" class="btn btn-outline-primary active" id="btnChartBar">Bar</button>
+                    <button type="button" class="btn btn-outline-primary" id="btnChartLine">Line</button>
+                </div>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="card border-0 shadow-sm mt-4" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
     <div class="card-body p-0">
