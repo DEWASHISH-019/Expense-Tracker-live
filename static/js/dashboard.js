@@ -103,27 +103,14 @@ function renderMonthlyChart(data, chartType = 'bar') {
         type: chartType,
         data: {
             labels: formattedLabels,
-                        datasets: [{
-                label: "Monthly Total", 
-                data: data.monthly_totals, 
-                backgroundColor: bgGradient,
-                borderColor: '#2563eb', 
-                borderWidth: chartType === 'line' ? 3 : 1.5,
-                borderRadius: chartType === 'bar' ? 10 : 0, 
-                borderSkipped: false, /* This brings back the bottom rounded corners */
-                maxBarThickness: 54, 
-                fill: chartType === 'line',
-                tension: 0.4, 
-                pointRadius: chartType === 'line' ? 6 : 0, 
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#2563eb', 
-                pointBorderWidth: 3, 
-                pointHoverRadius: 9,
-                pointHoverBackgroundColor: '#2563eb', 
-                pointHoverBorderColor: '#ffffff', 
-                pointHoverBorderWidth: 2
+            datasets: [{
+                label: "Monthly Total", data: data.monthly_totals, backgroundColor: bgGradient,
+                borderColor: '#2563eb', borderWidth: chartType === 'line' ? 3 : 1.5,
+                borderRadius: chartType === 'bar' ? 10 : 0, borderSkipped: false, maxBarThickness: 54, fill: chartType === 'line',
+                tension: 0.4, pointRadius: chartType === 'line' ? 6 : 0, pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#2563eb', pointBorderWidth: 3, pointHoverRadius: 9,
+                pointHoverBackgroundColor: '#2563eb', pointHoverBorderColor: '#ffffff', pointHoverBorderWidth: 2
             }]
-
         },
         options: {
             responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
@@ -170,16 +157,42 @@ function initDashboardCharts() {
             cachedChartData = data;
             
             const select = document.getElementById("pieMonthSelect");
-            if (select && data.months) {
-                [...data.months].reverse().forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m;
-                    opt.textContent = formatMonthName(m);
-                    select.appendChild(opt);
-                });
+            // Dynamically calculate the current month directly in JS
+            const d = new Date();
+            const currentMonthStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+
+            if (select) {
+                // Clear any hardcoded HTML options
+                select.innerHTML = '';
+                
+                // Set "This Month" as the first option
+                const optThis = document.createElement('option');
+                optThis.value = currentMonthStr;
+                optThis.textContent = "This Month";
+                select.appendChild(optThis);
+
+                // Set "Lifetime Total" as the second option
+                const optTotal = document.createElement('option');
+                optTotal.value = 'total';
+                optTotal.textContent = "Lifetime Total";
+                select.appendChild(optTotal);
+
+                // Add any older historical months
+                if (data.months) {
+                    [...data.months].reverse().forEach(m => {
+                        if (m !== currentMonthStr) {
+                            const opt = document.createElement('option');
+                            opt.value = m;
+                            opt.textContent = formatMonthName(m);
+                            select.appendChild(opt);
+                        }
+                    });
+                }
+                select.value = currentMonthStr;
             }
 
-            renderCategoryChart(data, 'total');
+            // Render the 'month' type immediately on page load
+            renderCategoryChart(data, 'month');
             renderMonthlyChart(data, currentMonthlyChartType);
         })
         .catch(error => console.error("Chart error:", error));
