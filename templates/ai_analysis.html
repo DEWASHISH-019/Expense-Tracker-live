@@ -56,23 +56,86 @@
     </div>
 
     <div class="card shadow-sm mt-3">
-        <div class="card-header bg-white">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Category Breakdown</h5>
+            <select id="analysisMonthSelect" class="form-select form-select-sm shadow-none" style="width: auto; padding-right: 32px; border-radius: 8px; border: 1px solid #e2e8f0; font-weight: 500; cursor: pointer;">
+                <option value="{{ result.current_month }}">This Month</option>
+                <option value="total">Lifetime Total</option>
+                {% for m in result.available_months %}
+                    {% if m != result.current_month %}
+                        <option value="{{ m }}">{{ m }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
         </div>
-        <div class="card-body">
-            {% if result.category_breakdown %}
-                <ul class="list-group list-group-flush">
-                {% for category, amount in result.category_breakdown.items() %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="card-body p-0">
+            <!-- Lifetime Total List -->
+            <ul id="list-total" class="list-group list-group-flush breakdown-list d-none">
+            {% if result.category_breakdown_total %}
+                {% for category, amount in result.category_breakdown_total.items() %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                         {{ category }}
                         <span class="fw-bold">₹{{ "%.2f"|format(amount) }}</span>
                     </li>
                 {% endfor %}
-                </ul>
             {% else %}
-                <p class="text-muted mb-0">No expenses recorded yet.</p>
+                <li class="list-group-item px-4 py-3 text-muted">No expenses recorded yet.</li>
             {% endif %}
+            </ul>
+
+            <!-- Monthly Lists -->
+            {% for month, breakdown in result.breakdown_by_month.items() %}
+            <ul id="list-{{ month }}" class="list-group list-group-flush breakdown-list d-none">
+                {% if breakdown %}
+                    {% for category, amount in breakdown.items() %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                            {{ category }}
+                            <span class="fw-bold">₹{{ "%.2f"|format(amount) }}</span>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item px-4 py-3 text-muted">No expenses recorded for this month.</li>
+                {% endif %}
+            </ul>
+            {% endfor %}
         </div>
     </div>
 </div>
+
+<script>
+    function formatMonthOption(str) {
+        if (!str || !str.includes('-')) return str;
+        const parts = str.split('-');
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthIdx = parseInt(parts[1], 10) - 1;
+        return (monthNames[monthIdx] || parts[1]) + ' ' + parts[0];
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const select = document.getElementById("analysisMonthSelect");
+        
+        // Format the dynamically added YYYY-MM options to "Mon YYYY"
+        Array.from(select.options).forEach(opt => {
+            if (opt.value !== 'total' && opt.text === opt.value) {
+                opt.text = formatMonthOption(opt.value);
+            }
+        });
+
+        function updateList() {
+            // Hide all lists
+            document.querySelectorAll('.breakdown-list').forEach(el => el.classList.add('d-none'));
+            // Show the selected one
+            const selectedList = document.getElementById('list-' + select.value);
+            if (selectedList) {
+                selectedList.classList.remove('d-none');
+            }
+        }
+
+        select.addEventListener('change', updateList);
+        
+        // Force default view to current month
+        select.value = '{{ result.current_month }}';
+        updateList();
+    });
+</script>
 {% endblock %}
