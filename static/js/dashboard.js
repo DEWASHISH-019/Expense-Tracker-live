@@ -2,7 +2,6 @@ let monthlyChartInstance = null;
 let categoryChartInstance = null;
 let cachedChartData = null;
 let currentMonthlyChartType = 'bar';
-let currentPieChartType = 'total';
 
 function formatMonthName(str) {
     if (!str || typeof str !== 'string' || !str.includes('-')) return str;
@@ -14,82 +13,49 @@ function formatMonthName(str) {
 
 function formatCurrency(val) {
     return '₹' + Number(val).toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        minimumFractionDigits: 2, maximumFractionDigits: 2
     });
 }
 
 function renderCategoryChart(data, type = 'total') {
     const ctx = document.getElementById("categoryChart");
-    if (!ctx) return;
+    const emptyState = document.getElementById("categoryChartEmpty");
+    if (!ctx || !emptyState) return;
 
-    let labels = type === 'total' ? data.categories : data.current_month_categories;
-    let values = type === 'total' ? data.category_totals : data.current_month_category_totals;
+    let labels = type === 'total' ? data.categories : data.selected_month_categories;
+    let values = type === 'total' ? data.category_totals : data.selected_month_category_totals;
 
     if (!labels || labels.length === 0) {
-        ctx.parentElement.innerHTML = `
-            <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted" id="categoryChartEmpty">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#cbd5e1" class="mb-2" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
-                </svg>
-                <span>No expense data to display</span>
-            </div>
-            <canvas id="categoryChart" style="display: none;"></canvas>`;
+        ctx.style.display = 'none';
+        emptyState.classList.remove('d-none');
+        emptyState.classList.add('d-flex');
         return;
     } else {
-        const emptyState = document.getElementById("categoryChartEmpty");
-        if (emptyState) emptyState.style.display = 'none';
         ctx.style.display = 'block';
+        emptyState.classList.add('d-none');
+        emptyState.classList.remove('d-flex');
     }
 
-    const modernPalette = [
-        '#2563eb', '#0d9488', '#f59e0b', '#10b981',
-        '#0284c7', '#ec4899', '#f97316', '#64748b',
-        '#84cc16', '#06b6d4', '#6366f1', '#475569'
-    ];
-
+    const modernPalette = ['#2563eb', '#0d9488', '#f59e0b', '#10b981', '#0284c7', '#ec4899', '#f97316', '#64748b', '#84cc16', '#06b6d4', '#6366f1', '#475569'];
     const totalSpent = values.reduce((a, b) => a + b, 0);
 
-    if (categoryChartInstance) {
-        categoryChartInstance.destroy();
-    }
+    if (categoryChartInstance) categoryChartInstance.destroy();
 
     categoryChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
             labels: labels,
             datasets: [{
-                data: values,
-                backgroundColor: modernPalette.slice(0, labels.length),
-                borderWidth: 3,
-                borderColor: '#ffffff',
-                hoverOffset: 8,
-                borderRadius: 5
+                data: values, backgroundColor: modernPalette.slice(0, labels.length),
+                borderWidth: 3, borderColor: '#ffffff', hoverOffset: 8, borderRadius: 5
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '72%',
+            responsive: true, maintainAspectRatio: false, cutout: '72%',
             plugins: {
-                legend: {
-                    position: "bottom",
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        padding: 16,
-                        font: { family: "Arial, sans-serif", size: 12, weight: '500' },
-                        color: '#4b5563'
-                    }
-                },
+                legend: { position: "bottom", labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { family: "Arial, sans-serif", size: 12, weight: '500' }, color: '#4b5563' } },
                 tooltip: {
-                    backgroundColor: '#111827',
-                    titleColor: '#f9fafb',
-                    bodyColor: '#ffffff',
-                    padding: 12,
-                    cornerRadius: 10,
-                    boxPadding: 6,
+                    backgroundColor: '#111827', titleColor: '#f9fafb', bodyColor: '#ffffff', padding: 12, cornerRadius: 10, boxPadding: 6,
                     callbacks: {
                         label: function(context) {
                             const val = context.raw || 0;
@@ -131,64 +97,36 @@ function renderMonthlyChart(data, chartType = 'bar') {
         bgGradient.addColorStop(1, 'rgba(37, 99, 235, 0.01)');
     }
 
-    if (monthlyChartInstance) {
-        monthlyChartInstance.destroy();
-    }
+    if (monthlyChartInstance) monthlyChartInstance.destroy();
 
     monthlyChartInstance = new Chart(ctx, {
         type: chartType,
         data: {
             labels: formattedLabels,
             datasets: [{
-                label: "Monthly Total",
-                data: data.monthly_totals,
-                backgroundColor: bgGradient,
-                borderColor: '#2563eb',
-                borderWidth: chartType === 'line' ? 3 : 1.5,
-                borderRadius: chartType === 'bar' ? 10 : 0,
-                borderSkipped: false,
-                maxBarThickness: 54,
-                fill: chartType === 'line',
-                tension: 0.4,
-                pointRadius: chartType === 'line' ? 6 : 0,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#2563eb',
-                pointBorderWidth: 3,
-                pointHoverRadius: 9,
-                pointHoverBackgroundColor: '#2563eb',
-                pointHoverBorderColor: '#ffffff',
-                pointHoverBorderWidth: 2
+                label: "Monthly Total", data: data.monthly_totals, backgroundColor: bgGradient,
+                borderColor: '#2563eb', borderWidth: chartType === 'line' ? 3 : 1.5,
+                borderRadius: chartType === 'bar' ? 10 : 0, maxBarThickness: 54, fill: chartType === 'line',
+                tension: 0.4, pointRadius: chartType === 'line' ? 6 : 0, pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#2563eb', pointBorderWidth: 3, pointHoverRadius: 9,
+                pointHoverBackgroundColor: '#2563eb', pointHoverBorderColor: '#ffffff', pointHoverBorderWidth: 2
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { intersect: false, mode: 'index' },
+            responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#111827',
-                    titleColor: '#f9fafb',
-                    bodyColor: '#ffffff',
-                    padding: 12,
-                    cornerRadius: 10,
-                    callbacks: {
-                        label: function(context) { return ` Spent: ${formatCurrency(context.raw)}`; }
-                    }
+                    backgroundColor: '#111827', titleColor: '#f9fafb', bodyColor: '#ffffff', padding: 12, cornerRadius: 10,
+                    callbacks: { label: function(context) { return ` Spent: ${formatCurrency(context.raw)}`; } }
                 }
             },
             scales: {
-                x: {
-                    grid: { display: false, drawBorder: false },
-                    ticks: { color: '#6b7280', font: { size: 12, weight: '600' } }
-                },
+                x: { grid: { display: false, drawBorder: false }, ticks: { color: '#6b7280', font: { size: 12, weight: '600' } } },
                 y: {
-                    beginAtZero: true,
-                    grid: { color: '#f1f5f9', drawBorder: false, borderDash: [5, 5] },
-                    border: { display: false },
+                    beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false, borderDash: [5, 5] }, border: { display: false },
                     ticks: {
-                        color: '#9ca3af',
-                        font: { size: 11 },
+                        color: '#9ca3af', font: { size: 11 },
                         callback: function(val) {
                             if (val >= 1000) return '₹' + (val / 1000).toLocaleString() + 'k';
                             return '₹' + val;
@@ -201,20 +139,41 @@ function renderMonthlyChart(data, chartType = 'bar') {
     });
 }
 
+function loadPieChartData(month) {
+    if (month === 'total') {
+        renderCategoryChart(cachedChartData, 'total');
+    } else {
+        fetch(`/api/chart-data?month=${month}`)
+            .then(res => res.json())
+            .then(data => renderCategoryChart(data, 'month'))
+            .catch(err => console.error("Error fetching pie data:", err));
+    }
+}
+
 function initDashboardCharts() {
     fetch("/api/chart-data")
         .then(response => response.json())
         .then(data => {
             cachedChartData = data;
-            renderCategoryChart(data, currentPieChartType);
+            
+            const select = document.getElementById("pieMonthSelect");
+            if (select && data.months) {
+                [...data.months].reverse().forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = formatMonthName(m);
+                    select.appendChild(opt);
+                });
+            }
+
+            renderCategoryChart(data, 'total');
             renderMonthlyChart(data, currentMonthlyChartType);
         })
         .catch(error => console.error("Chart error:", error));
 
     const btnBar = document.getElementById("btnChartBar");
     const btnLine = document.getElementById("btnChartLine");
-    const btnPieTotal = document.getElementById("btnPieTotal");
-    const btnPieMonth = document.getElementById("btnPieMonth");
+    const pieSelect = document.getElementById("pieMonthSelect");
 
     if (btnBar && btnLine) {
         btnBar.addEventListener("click", function() {
@@ -234,21 +193,9 @@ function initDashboardCharts() {
         });
     }
 
-    if (btnPieTotal && btnPieMonth) {
-        btnPieTotal.addEventListener("click", function() {
-            if (currentPieChartType === 'total') return;
-            currentPieChartType = 'total';
-            btnPieTotal.classList.add("active");
-            btnPieMonth.classList.remove("active");
-            if (cachedChartData) renderCategoryChart(cachedChartData, 'total');
-        });
-
-        btnPieMonth.addEventListener("click", function() {
-            if (currentPieChartType === 'month') return;
-            currentPieChartType = 'month';
-            btnPieMonth.classList.add("active");
-            btnPieTotal.classList.remove("active");
-            if (cachedChartData) renderCategoryChart(cachedChartData, 'month');
+    if (pieSelect) {
+        pieSelect.addEventListener("change", function(e) {
+            loadPieChartData(e.target.value);
         });
     }
 }
