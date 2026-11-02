@@ -9,8 +9,19 @@
     /* Stop the table from acting like a scrollable block on paper */
     .table-responsive { overflow: visible !important; }
     
-    /* Hide the large decorative icons to save horizontal space */
-    .expense-icon-badge { display: none !important; }
+    /* Force browsers to print the background colors of the logos and badges */
+    .expense-icon-badge, .badge-category {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    /* Keep the logos visible but shrink them to save space */
+    .expense-icon-badge {
+        display: inline-flex !important;
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 12px !important;
+    }
     
     /* Strip the fixed min-widths and reduce font size */
     th[style], td[style] {
@@ -31,9 +42,6 @@
     .card { border: none !important; box-shadow: none !important; }
 }
 </style>
-
-
-
 {% set cat_icons = {
     'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c', 'badge-cat-food'),
     'Groceries': ('bi-basket2-fill', '#fef3c7', '#b45309', 'badge-cat-groceries'),
