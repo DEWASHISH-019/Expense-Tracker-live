@@ -340,16 +340,16 @@ def chart_data():
     """, (session["user_id"],))
     monthly = cursor.fetchall()
     
-    # 3. Current month category totals
-    current_month = datetime.now().strftime("%Y-%m")
+    # 3. Selected month category totals (defaults to current month if none requested)
+    selected_month = request.args.get("month", datetime.now().strftime("%Y-%m"))
     cursor.execute("""
         SELECT category, SUM(amount) AS total
         FROM expenses
         WHERE user_id = %s AND expense_date LIKE %s
         GROUP BY category
         ORDER BY total DESC
-    """, (session["user_id"], f"{current_month}%"))
-    current_month_rows = cursor.fetchall()
+    """, (session["user_id"], f"{selected_month}%"))
+    selected_month_rows = cursor.fetchall()
     
     cursor.close()
     conn.close()
@@ -357,8 +357,8 @@ def chart_data():
     return jsonify({
         "categories": [r["category"] for r in rows],
         "category_totals": [round(r["total"], 2) for r in rows],
-        "current_month_categories": [r["category"] for r in current_month_rows],
-        "current_month_category_totals": [round(r["total"], 2) for r in current_month_rows],
+        "selected_month_categories": [r["category"] for r in selected_month_rows],
+        "selected_month_category_totals": [round(r["total"], 2) for r in selected_month_rows],
         "months": [r["month"] for r in monthly],
         "monthly_totals": [round(r["total"], 2) for r in monthly]
     })
