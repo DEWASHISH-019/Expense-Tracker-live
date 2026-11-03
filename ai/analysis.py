@@ -40,11 +40,22 @@ def analyze_spending(rows):
     this_month_spent = monthly_totals.get(current_month_str, 0.0)
     last_month_spent = monthly_totals.get(last_month_str, 0.0)
 
-    if monthly_totals:
-        latest_month = max(monthly_totals.keys())
-        predicted_next_month = round(monthly_totals[latest_month], 2)
+    # --- SMARTER PREDICTION LOGIC: Moving Average ---
+    # Sort months chronologically and exclude the current (incomplete) month
+    sorted_months = sorted(monthly_totals.keys())
+    completed_months = [m for m in sorted_months if m < current_month_str]
+    
+    if len(completed_months) >= 3:
+        # Average of the last 3 completed months
+        recent_3 = completed_months[-3:]
+        predicted_next_month = sum(monthly_totals[m] for m in recent_3) / 3.0
+    elif len(completed_months) > 0:
+        # Average of whatever completed months exist (if less than 3)
+        predicted_next_month = sum(monthly_totals[m] for m in completed_months) / len(completed_months)
     else:
-        predicted_next_month = 0.0
+        # Fallback if only the current month has data
+        predicted_next_month = this_month_spent
+    # ------------------------------------------------
 
     bbm = {m: dict(cats) for m, cats in breakdown_by_month.items()}
     available_months = sorted(list(bbm.keys()), reverse=True)
@@ -63,5 +74,5 @@ def analyze_spending(rows):
         "breakdown_by_month": bbm,
         "available_months": available_months,
         "current_month": current_month_str,
-        "predicted_next_month": predicted_next_month
+        "predicted_next_month": round(predicted_next_month, 2)
     }
