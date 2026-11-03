@@ -137,6 +137,8 @@ def dashboard():
 
     total = sum(row["amount"] for row in expenses)
     count = len(expenses)
+    current_month_count = sum(1 for row in expenses if row["expense_date"].startswith(current_month))
+
 
     now = datetime.now()
     current_month = now.strftime("%Y-%m")
