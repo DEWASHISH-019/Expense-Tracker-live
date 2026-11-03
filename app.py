@@ -165,6 +165,7 @@ def dashboard():
         expenses=expenses[:5],
         total=total,
         count=count,
+        current_month_count = sum(1 for row in expenses if row["expense_date"].startswith(current_month))
         monthly_total=monthly_total,
         last_month_total=last_month_total,
         highest_category=highest_category
