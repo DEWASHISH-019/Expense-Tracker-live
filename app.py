@@ -138,26 +138,25 @@ def dashboard():
 
     total = sum(row["amount"] for row in expenses)
     count = len(expenses)
+    
     current_month = datetime.now().strftime('%Y-%m')
     current_month_count = sum(1 for row in expenses if str(row["expense_date"]).startswith(current_month))
 
-
-
     now = datetime.now()
-    current_month = now.strftime("%Y-%m")
     if now.month == 1:
         last_month_str = f"{now.year - 1}-12"
     else:
         last_month_str = f"{now.year}-{now.month - 1:02d}"
 
     monthly_total = sum(
-        row["amount"] for row in expenses if row["expense_date"].startswith(current_month)
+        row["amount"] for row in expenses if str(row["expense_date"]).startswith(current_month)
     )
     last_month_total = sum(
-        row["amount"] for row in expenses if row["expense_date"].startswith(last_month_str)
+        row["amount"] for row in expenses if str(row["expense_date"]).startswith(last_month_str)
     )
-    last_month_count = sum(1 for row in expenses if str(row["expense_date"]).startswith(last_month_str))
-
+    last_month_count = sum(
+        1 for row in expenses if str(row["expense_date"]).startswith(last_month_str)
+    )
 
     category_totals = {}
     for row in expenses:
@@ -165,7 +164,7 @@ def dashboard():
 
     highest_category = max(category_totals, key=category_totals.get) if category_totals else "No data"
 
-        return render_template(
+    return render_template(
         "dashboard.html",
         expenses=expenses[:5],
         total=total,
