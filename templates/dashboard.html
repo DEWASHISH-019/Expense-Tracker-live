@@ -1,9 +1,6 @@
-
 {% extends "base.html" %}
 {% block title %}Dashboard - ExpenseTracker{% endblock %}
-
 {% block content %}
-
 {% set cat_icons = {
     'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c', 'badge-cat-food'),
     'Groceries': ('bi-basket2-fill', '#fef3c7', '#b45309', 'badge-cat-groceries'),
@@ -19,465 +16,193 @@
     'Other': ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')
 } %}
 
-<!-- Dashboard Header -->
-
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <p class="text-muted mb-1 small">Welcome back, {{ session.get('user_name') }}</p>
         <h2 class="fw-bold mb-0" style="letter-spacing: -0.02em;">Financial Dashboard</h2>
     </div>
-
-    <a href="{{ url_for('add_expense') }}"
-       class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+    <a href="{{ url_for('add_expense') }}" class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
         <i class="bi bi-plus-lg"></i>
         <span>Add Expense</span>
     </a>
 </div>
 
-
-<!-- Statistics Cards -->
-
 <div class="row g-3 mb-4">
-
-    <!-- Total Expenses -->
-
+    <!-- Top Row: 3 Cards -->
     <div class="col-md-4">
         <div class="stat-card d-flex align-items-center justify-content-between">
             <div>
                 <span>Total Expenses</span>
                 <h3>₹{{ "%.2f"|format(total) }}</h3>
             </div>
-
-            <div class="expense-icon-badge"
-                 style="background:#eff6ff;color:#2563eb;width:44px;height:44px;font-size:20px;">
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 44px; height: 44px; font-size: 20px;">
                 <i class="bi bi-wallet2"></i>
             </div>
         </div>
     </div>
-
-
-    <!-- This Month -->
-
     <div class="col-md-4">
         <div class="stat-card d-flex align-items-center justify-content-between">
             <div>
                 <span>This Month</span>
                 <h3>₹{{ "%.2f"|format(monthly_total) }}</h3>
             </div>
-
-            <div class="expense-icon-badge"
-                 style="background:#ecfdf5;color:#059669;width:44px;height:44px;font-size:20px;">
+            <div class="expense-icon-badge" style="background: #ecfdf5; color: #059669; width: 44px; height: 44px; font-size: 20px;">
                 <i class="bi bi-calendar2-check"></i>
             </div>
         </div>
     </div>
-
-
-    <!-- Last Month -->
-
     <div class="col-md-4">
         <div class="stat-card d-flex align-items-center justify-content-between">
             <div>
                 <span>Last Month</span>
                 <h3>₹{{ "%.2f"|format(last_month_total) }}</h3>
             </div>
-
-            <div class="expense-icon-badge"
-                 style="background:#f8fafc;color:#475569;width:44px;height:44px;font-size:20px;">
+            <div class="expense-icon-badge" style="background: #f8fafc; color: #475569; width: 44px; height: 44px; font-size: 20px;">
                 <i class="bi bi-calendar-minus"></i>
             </div>
         </div>
     </div>
-
-
-    <!-- Transactions -->
-
+    
+    <!-- Bottom Row: 2 Cards -->
     <div class="col-md-6">
         <div class="stat-card d-flex align-items-center justify-content-between">
-
             <div>
                 <div class="d-flex align-items-center gap-2 mb-1">
-
-                    <span class="mb-0 text-muted" style="font-size:0.875rem;">
-                        Transactions
-                    </span>
-
-                    <select
-                        id="transactionPeriod"
-                        class="form-select form-select-sm shadow-none"
-                        style="width:max-content;padding:2px 28px 2px 8px;font-size:0.75rem;height:26px;border-radius:4px;border:1px solid #e2e8f0;cursor:pointer;background-color:#f8fafc;color:#475569;">
-
+                    <span class="mb-0 text-muted" style="font-size: 0.875rem;">Transactions</span>
+                    <select class="form-select form-select-sm shadow-none" style="width: max-content; padding: 2px 28px 2px 8px; font-size: 0.75rem; height: 26px; border-radius: 4px; border: 1px solid #e2e8f0; cursor: pointer; background-color: #f8fafc; color: #475569;" onchange="document.getElementById('txnCountDisplay').innerText = this.value;">
                         <option value="{{ current_month_count }}">This Month</option>
-
                         <option value="{{ last_month_count }}">Last Month</option>
-
                         <option value="{{ count }}">Lifetime Total</option>
-
                     </select>
-
                 </div>
-
-                <h3 id="txnCountDisplay" class="mb-0">
-                    {{ current_month_count }}
-                </h3>
+                <h3 id="txnCountDisplay" class="mb-0">{{ current_month_count }}</h3>
             </div>
-
-            <div class="expense-icon-badge"
-                 style="background:#eff6ff;color:#2563eb;width:44px;height:44px;font-size:20px;flex-shrink:0;">
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 44px; height: 44px; font-size: 20px; flex-shrink: 0;">
                 <i class="bi bi-receipt"></i>
             </div>
-
         </div>
     </div>
-
-
-    <!-- Top Category -->
-
     <div class="col-md-6">
         <div class="stat-card d-flex align-items-center justify-content-between">
-
             <div>
-                <span class="mb-1 d-block text-muted" style="font-size:0.875rem;">
-                    Top Category
-                </span>
-
-                <h3 class="mb-0"
-                    style="font-size:1.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                    {{ highest_category }}
-                </h3>
+                <span class="mb-1 d-block text-muted" style="font-size: 0.875rem;">Top Category</span>
+                <h3 class="mb-0" style="font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ highest_category }}</h3>
             </div>
-
-            <div class="expense-icon-badge"
-                 style="background:#fff7ed;color:#ea580c;width:44px;height:44px;font-size:20px;flex-shrink:0;">
+            <div class="expense-icon-badge" style="background: #fff7ed; color: #ea580c; width: 44px; height: 44px; font-size: 20px; flex-shrink: 0;">
                 <i class="bi bi-pie-chart-fill"></i>
             </div>
-
         </div>
     </div>
-
 </div>
 
-
-<!-- Charts Section -->
-
 <div class="row g-4 mb-4">
-
-
     <!-- Category Breakdown Pie Chart -->
-
     <div class="col-lg-6">
-
         <div class="chart-card p-4">
-
             <div class="d-flex justify-content-between align-items-center mb-3">
-
                 <div>
                     <h5 class="fw-bold mb-0">Category Breakdown</h5>
                     <small class="text-muted">Distribution of expenses</small>
                 </div>
-
-                <select
-                    id="pieMonthSelect"
-                    class="form-select form-select-sm shadow-none"
-                    style="width:auto;padding-right:32px;border-radius:8px;border:1px solid #e2e8f0;font-weight:500;cursor:pointer;">
-
+                <select id="pieMonthSelect" class="form-select form-select-sm shadow-none" style="width: auto; padding-right: 32px; border-radius: 8px; border: 1px solid #e2e8f0; font-weight: 500; cursor: pointer;">
                     <option value="total">Lifetime Total</option>
-
+                    <!-- JavaScript will automatically add your months here -->
                 </select>
-
             </div>
-
-
-            <!-- FIXED CHART CONTAINER -->
-
-            <div class="category-chart-container">
-
+            <div style="position: relative; height: 280px;">
                 <canvas id="categoryChart"></canvas>
-
-                <div id="categoryChartEmpty"
-                     class="d-none flex-column align-items-center justify-content-center text-muted">
-
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         width="40"
-                         height="40"
-                         fill="#cbd5e1"
-                         class="mb-2"
-                         viewBox="0 0 16 16">
-
+                <div id="categoryChartEmpty" class="d-none flex-column align-items-center justify-content-center h-100 text-muted" style="position: absolute; top:0; left:0; width:100%; background: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#cbd5e1" class="mb-2" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-
                         <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
-
                     </svg>
-
                     <span>No expenses this month</span>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
-
-    <!-- Monthly Spending Chart -->
-
+    
+    <!-- Monthly Spending Bar/Line Chart -->
     <div class="col-lg-6">
-
         <div class="chart-card p-4">
-
             <div class="d-flex justify-content-between align-items-center mb-3">
-
                 <div>
                     <h5 class="fw-bold mb-0">Monthly Spending</h5>
                     <small class="text-muted">Trends across months</small>
                 </div>
-
-                <div class="btn-group btn-group-sm"
-                     role="group"
-                     aria-label="Chart type toggle">
-
-                    <button type="button"
-                            class="btn btn-outline-primary active"
-                            id="btnChartBar">
-                        Bar
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-outline-primary"
-                            id="btnChartLine">
-                        Line
-                    </button>
-
+                <div class="btn-group btn-group-sm" role="group" aria-label="Chart type toggle">
+                    <button type="button" class="btn btn-outline-primary active" id="btnChartBar">Bar</button>
+                    <button type="button" class="btn btn-outline-primary" id="btnChartLine">Line</button>
                 </div>
-
             </div>
-
-            <div class="monthly-chart-container">
+            <div style="position: relative; height: 280px;">
                 <canvas id="monthlyChart"></canvas>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
-
-<!-- Recent Expenses -->
-
-<div class="card border-0 shadow-sm mt-4"
-     style="border-radius:20px;overflow:hidden;border:1px solid rgba(226,232,240,0.8);">
-
+<div class="card border-0 shadow-sm mt-4" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
     <div class="card-body p-0">
-
         <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
-
             <div>
                 <h5 class="mb-0 fw-bold">Recent Expenses</h5>
                 <small class="text-muted">Your latest recorded transactions</small>
             </div>
-
             <a href="{{ url_for('expenses') }}" class="btn-view-all">
-
                 <span>View all</span>
-
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="16"
-                     height="16"
-                     fill="currentColor"
-                     viewBox="0 0 16 16">
-
-                    <path fill-rule="evenodd"
-                          d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
-
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
                 </svg>
-
             </a>
-
         </div>
-
-
         {% if expenses %}
-
         <div class="table-responsive">
-
-            <table class="table table-custom align-middle mb-0">
-
-                <thead>
-                    <tr>
-                        <th style="min-width:180px;">Title</th>
-                        <th>Category</th>
-                        <th>Date</th>
-                        <th class="text-end pe-4">Amount</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    {% for e in expenses %}
-
-                    {% set cat_meta = cat_icons.get(e['category'], ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')) %}
-
-                    <tr>
-
-                        <td>
-                            <div class="expense-title-cell">
-
-                                <div class="expense-icon-badge"
-                                     style="background:{{ cat_meta[1] }};color:{{ cat_meta[2] }};width:32px;height:32px;font-size:14px;">
-
-                                    <i class="bi {{ cat_meta[0] }}"></i>
-
-                                </div>
-
-                                <span class="fw-bold text-dark">
-                                    {{ e['title'] }}
-                                </span>
-
-                            </div>
-                        </td>
-
-
-                        <td>
-                            <span class="badge-category {{ cat_meta[3] }}">
-
-                                <i class="bi {{ cat_meta[0] }}"
-                                   style="font-size:10px;"></i>
-
-                                {{ e['category'] }}
-
-                            </span>
-                        </td>
-
-
-                        <td class="text-secondary small">
-                            {{ e['expense_date'] }}
-                        </td>
-
-
-                        <td class="text-end pe-4 fw-bold text-dark">
-                            ₹{{ "%.2f"|format(e['amount']) }}
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
+        <table class="table table-custom align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="min-width: 180px;">Title</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th class="text-end pe-4">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in expenses %}
+            {% set cat_meta = cat_icons.get(e['category'], ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')) %}
+            <tr>
+                <td>
+                    <div class="expense-title-cell">
+                        <div class="expense-icon-badge" style="background: {{ cat_meta[1] }}; color: {{ cat_meta[2] }}; width: 32px; height: 32px; font-size: 14px;">
+                            <i class="bi {{ cat_meta[0] }}"></i>
+                        </div>
+                        <span class="fw-bold text-dark">{{ e['title'] }}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge-category {{ cat_meta[3] }}">
+                        <i class="bi {{ cat_meta[0] }}" style="font-size: 10px;"></i>
+                        {{ e['category'] }}
+                    </span>
+                </td>
+                <td class="text-secondary small">{{ e['expense_date'] }}</td>
+                <td class="text-end pe-4 fw-bold text-dark">₹{{ "%.2f"|format(e['amount']) }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
         </div>
-
         {% else %}
-
         <div class="text-center py-5 text-muted">
-
             <p class="mb-2">No expenses recorded yet.</p>
-
-            <a href="{{ url_for('add_expense') }}"
-               class="btn btn-primary btn-sm rounded-pill px-4">
-                + Add Expense
-            </a>
-
+            <a href="{{ url_for('add_expense') }}" class="btn btn-primary btn-sm rounded-pill px-4">+ Add Expense</a>
         </div>
-
         {% endif %}
-
     </div>
-
 </div>
-
-
-<!-- Chart and Dropdown Styling -->
-
-<style>
-
-    .category-chart-container {
-        position: relative;
-        width: 100%;
-        height: 360px;
-        min-width: 0;
-    }
-
-    .category-chart-container canvas {
-        display: block;
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    .category-chart-container #categoryChartEmpty {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-    }
-
-    .monthly-chart-container {
-        position: relative;
-        width: 100%;
-        height: 360px;
-        min-width: 0;
-    }
-
-    .monthly-chart-container canvas {
-        display: block;
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    @media (max-width: 576px) {
-
-        .category-chart-container {
-            height: 320px;
-        }
-
-        .monthly-chart-container {
-            height: 320px;
-        }
-
-        .chart-card {
-            min-width: 0;
-        }
-
-    }
-
-</style>
-
-
-<!-- Transaction Dropdown Script -->
-
-<script>
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const transactionPeriod = document.getElementById("transactionPeriod");
-        const txnCountDisplay = document.getElementById("txnCountDisplay");
-
-        if (transactionPeriod && txnCountDisplay) {
-
-            transactionPeriod.addEventListener("change", function () {
-
-                txnCountDisplay.textContent = this.value;
-
-            });
-
-        }
-
-    });
-
-</script>
-
 {% endblock %}
 
-
 {% block scripts %}
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-
 {% endblock %}
