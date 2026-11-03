@@ -385,6 +385,17 @@ def chart_data():
         ORDER BY total DESC
     """, (session["user_id"], f"{selected_month}%"))
     selected_month_rows = cursor.fetchall()
+
+    # --- NEW: Get transaction counts ---
+    cursor.execute("""
+        SELECT COUNT(*) AS txn_count FROM expenses 
+        WHERE user_id = %s AND expense_date LIKE %s
+    """, (session["user_id"], f"{selected_month}%"))
+    selected_month_txn_count = cursor.fetchone()["txn_count"]
+
+    cursor.execute("SELECT COUNT(*) AS total_txns FROM expenses WHERE user_id = %s", (session["user_id"],))
+    total_txn_count = cursor.fetchone()["total_txns"]
+    # -----------------------------------
     
     cursor.close()
     conn.close()
@@ -395,8 +406,11 @@ def chart_data():
         "selected_month_categories": [r["category"] for r in selected_month_rows],
         "selected_month_category_totals": [round(r["total"], 2) for r in selected_month_rows],
         "months": [r["month"] for r in monthly],
-        "monthly_totals": [round(r["total"], 2) for r in monthly]
+        "monthly_totals": [round(r["total"], 2) for r in monthly],
+        "selected_month_txn_count": selected_month_txn_count,
+        "total_txn_count": total_txn_count
     })
+
 
 @app.route("/ai-analysis")
 @login_required
