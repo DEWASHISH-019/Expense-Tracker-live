@@ -168,12 +168,12 @@ def dashboard():
         expenses=expenses[:5],
         total=total,
         count=count,
-        current_month = datetime.now().strftime('%Y-%m')
-        current_month_count = sum(1 for row in expenses if str(row["expense_date"]).startswith(current_month)),
+        current_month_count=current_month_count,
         monthly_total=monthly_total,
         last_month_total=last_month_total,
         highest_category=highest_category
     )
+
 
 @app.route("/expenses")
 @login_required
