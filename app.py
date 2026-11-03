@@ -1,433 +1,208 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-import psycopg2
-import psycopg2.extras
-import os
-from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps
-from datetime import datetime
-from ai.analysis import analyze_spending
+{% extends "base.html" %}
+{% block title %}Dashboard - ExpenseTracker{% endblock %}
+{% block content %}
+{% set cat_icons = {
+    'Food': ('bi-cup-hot-fill', '#fff7ed', '#ea580c', 'badge-cat-food'),
+    'Groceries': ('bi-basket2-fill', '#fef3c7', '#b45309', 'badge-cat-groceries'),
+    'Bills': ('bi-lightning-charge-fill', '#fffbeb', '#d97706', 'badge-cat-bills'),
+    'Travel': ('bi-airplane-fill', '#eff6ff', '#2563eb', 'badge-cat-travel'),
+    'Shopping': ('bi-bag-heart-fill', '#f0fdfa', '#0d9488', 'badge-cat-shopping'),
+    'Rent': ('bi-house-door-fill', '#e0f2fe', '#0284c7', 'badge-cat-rent'),
+    'Entertainment': ('bi-film', '#fff1f2', '#be123c', 'badge-cat-entertainment'),
+    'Health': ('bi-heart-pulse-fill', '#ecfdf5', '#059669', 'badge-cat-health'),
+    'Personal': ('bi-scissors', '#ecfeff', '#0891b2', 'badge-cat-personal'),
+    'Education': ('bi-mortarboard-fill', '#eef2ff', '#2563eb', 'badge-cat-education'),
+    'Investments': ('bi-graph-up-arrow', '#f0fdf4', '#16a34a', 'badge-cat-investments'),
+    'Other': ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')
+} %}
 
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="text-muted mb-1 small">Welcome back, {{ session.get('user_name') }}</p>
+        <h2 class="fw-bold mb-0" style="letter-spacing: -0.02em;">Financial Dashboard</h2>
+    </div>
+    <a href="{{ url_for('add_expense') }}" class="btn btn-primary px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Expense</span>
+    </a>
+</div>
 
-app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "change-this-production-secret-key")
-DATABASE_URL = os.environ.get("DATABASE_URL")
-
-def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
-
-def init_db():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            created_at TEXT NOT NULL
-        )
-    """)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS expenses (
-            id SERIAL PRIMARY KEY,
-            user_id INTEGER NOT NULL,
-            title TEXT NOT NULL,
-            amount REAL NOT NULL,
-            category TEXT NOT NULL,
-            expense_date TEXT NOT NULL,
-            notes TEXT,
-            created_at TEXT NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        )
-    """)
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-def login_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if "user_id" not in session:
-            flash("Please login first.", "warning")
-            return redirect(url_for("login"))
-        return func(*args, **kwargs)
-    return wrapper
-
-@app.route("/")
-def index():
-    if "user_id" in session:
-        return redirect(url_for("dashboard"))
-    return render_template("index.html")
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        name = request.form["name"].strip()
-        email = request.form["email"].strip().lower()
-        password = request.form["password"]
-
-        if not name or not email or not password:
-            flash("All fields are required.", "danger")
-            return render_template("register.html")
-
-        if len(password) < 6:
-            flash("Password must contain at least 6 characters.", "danger")
-            return render_template("register.html")
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                "INSERT INTO users (name, email, password, created_at) VALUES (%s, %s, %s, %s)",
-                (name, email, generate_password_hash(password), datetime.now().isoformat())
-            )
-            conn.commit()
-            flash("Registration successful. Please login.", "success")
-            return redirect(url_for("login"))
-        except psycopg2.IntegrityError:
-            conn.rollback()
-            flash("Email is already registered.", "danger")
-            return render_template("register.html")
-        finally:
-            cursor.close()
-            conn.close()
-
-    return render_template("register.html")
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        email = request.form["email"].strip().lower()
-        password = request.form["password"]
-
-        conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if user and check_password_hash(user["password"], password):
-            session["user_id"] = user["id"]
-            session["user_name"] = user["name"]
-            flash("Welcome back!", "success")
-            return redirect(url_for("dashboard"))
-
-        flash("Invalid email or password.", "danger")
-
-    return render_template("login.html")
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("You have been logged out.", "success")
-    return redirect(url_for("login"))
-
-@app.route("/dashboard")
-@login_required
-def dashboard():
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute(
-        "SELECT * FROM expenses WHERE user_id = %s ORDER BY expense_date DESC, id DESC",
-        (session["user_id"],)
-    )
-    expenses = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    total = sum(row["amount"] for row in expenses)
-    count = len(expenses)
+<div class="row g-3 mb-4">
+    <!-- Top Row: 3 Cards -->
+    <div class="col-md-4">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span>Total Expenses</span>
+                <h3>₹{{ "%.2f"|format(total) }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 44px; height: 44px; font-size: 20px;">
+                <i class="bi bi-wallet2"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span>This Month</span>
+                <h3>₹{{ "%.2f"|format(monthly_total) }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #ecfdf5; color: #059669; width: 44px; height: 44px; font-size: 20px;">
+                <i class="bi bi-calendar2-check"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span>Last Month</span>
+                <h3>₹{{ "%.2f"|format(last_month_total) }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #f8fafc; color: #475569; width: 44px; height: 44px; font-size: 20px;">
+                <i class="bi bi-calendar-minus"></i>
+            </div>
+        </div>
+    </div>
     
-    current_month = datetime.now().strftime('%Y-%m')
-    current_month_count = sum(1 for row in expenses if str(row["expense_date"]).startswith(current_month))
+    <!-- Bottom Row: 2 Cards -->
+    <div class="col-md-6">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="mb-0 text-muted" style="font-size: 0.875rem;">Transactions</span>
+                    <select class="form-select form-select-sm shadow-none" style="width: max-content; padding: 2px 28px 2px 8px; font-size: 0.75rem; height: 26px; border-radius: 4px; border: 1px solid #e2e8f0; cursor: pointer; background-color: #f8fafc; color: #475569;" onchange="document.getElementById('txnCountDisplay').innerText = this.value;">
+                        <option value="{{ current_month_count }}">This Month</option>
+                        <option value="{{ last_month_count }}">Last Month</option>
+                        <option value="{{ count }}">Lifetime Total</option>
+                    </select>
+                </div>
+                <h3 id="txnCountDisplay" class="mb-0">{{ current_month_count }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #eff6ff; color: #2563eb; width: 44px; height: 44px; font-size: 20px; flex-shrink: 0;">
+                <i class="bi bi-receipt"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span class="mb-1 d-block text-muted" style="font-size: 0.875rem;">Top Category</span>
+                <h3 class="mb-0" style="font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ highest_category }}</h3>
+            </div>
+            <div class="expense-icon-badge" style="background: #fff7ed; color: #ea580c; width: 44px; height: 44px; font-size: 20px; flex-shrink: 0;">
+                <i class="bi bi-pie-chart-fill"></i>
+            </div>
+        </div>
+    </div>
+</div>
 
-    now = datetime.now()
-    if now.month == 1:
-        last_month_str = f"{now.year - 1}-12"
-    else:
-        last_month_str = f"{now.year}-{now.month - 1:02d}"
-
-    monthly_total = sum(
-        row["amount"] for row in expenses if str(row["expense_date"]).startswith(current_month)
-    )
-    last_month_total = sum(
-        row["amount"] for row in expenses if str(row["expense_date"]).startswith(last_month_str)
-    )
-    last_month_count = sum(
-        1 for row in expenses if str(row["expense_date"]).startswith(last_month_str)
-    )
-
-    category_totals = {}
-    for row in expenses:
-        category_totals[row["category"]] = category_totals.get(row["category"], 0) + row["amount"]
-
-    highest_category = max(category_totals, key=category_totals.get) if category_totals else "No data"
-
-    return render_template(
-        "dashboard.html",
-        expenses=expenses[:5],
-        total=total,
-        count=count,
-        current_month_count=current_month_count,
-        last_month_count=last_month_count,
-        monthly_total=monthly_total,
-        last_month_total=last_month_total,
-        highest_category=highest_category
-    )
-
-@app.route("/expenses")
-@login_required
-def expenses():
-    search = request.args.get("search", "").strip()
-    category = request.args.get("category", "").strip()
-
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+<div class="row g-4 mb-4">
+    <!-- Category Breakdown Pie Chart -->
+    <div class="col-lg-6">
+        <div class="chart-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Category Breakdown</h5>
+                    <small class="text-muted">Distribution of expenses</small>
+                </div>
+                <select id="pieMonthSelect" class="form-select form-select-sm shadow-none" style="width: auto; padding-right: 32px; border-radius: 8px; border: 1px solid #e2e8f0; font-weight: 500; cursor: pointer;">
+                    <option value="total">Lifetime Total</option>
+                    <!-- JavaScript will automatically add your months here -->
+                </select>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="categoryChart"></canvas>
+                <div id="categoryChartEmpty" class="d-none flex-column align-items-center justify-content-center h-100 text-muted" style="position: absolute; top:0; left:0; width:100%; background: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#cbd5e1" class="mb-2" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                    </svg>
+                    <span>No expenses this month</span>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    query = "SELECT * FROM expenses WHERE user_id = %s"
-    params = [session["user_id"]]
+    <!-- Monthly Spending Bar/Line Chart -->
+    <div class="col-lg-6">
+        <div class="chart-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Monthly Spending</h5>
+                    <small class="text-muted">Trends across months</small>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Chart type toggle">
+                    <button type="button" class="btn btn-outline-primary active" id="btnChartBar">Bar</button>
+                    <button type="button" class="btn btn-outline-primary" id="btnChartLine">Line</button>
+                </div>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
 
-    if search:
-        query += """ AND (
-            LOWER(title) LIKE LOWER(%s) 
-            OR LOWER(COALESCE(notes, '')) LIKE LOWER(%s) 
-            OR LOWER(category) LIKE LOWER(%s) 
-            OR CAST(amount AS TEXT) LIKE %s 
-            OR expense_date LIKE %s
-        )"""
-        params.extend([f"%{search}%", f"%{search}%", f"%{search}%", f"%{search}%", f"%{search}%"])
+<div class="card border-0 shadow-sm mt-4" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8);">
+    <div class="card-body p-0">
+        <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+            <div>
+                <h5 class="mb-0 fw-bold">Recent Expenses</h5>
+                <small class="text-muted">Your latest recorded transactions</small>
+            </div>
+            <a href="{{ url_for('expenses') }}" class="btn-view-all">
+                <span>View all</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+                </svg>
+            </a>
+        </div>
+        {% if expenses %}
+        <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="min-width: 180px;">Title</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th class="text-end pe-4">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in expenses %}
+            {% set cat_meta = cat_icons.get(e['category'], ('bi-tag-fill', '#f8fafc', '#475569', 'badge-cat-other')) %}
+            <tr>
+                <td>
+                    <div class="expense-title-cell">
+                        <div class="expense-icon-badge" style="background: {{ cat_meta[1] }}; color: {{ cat_meta[2] }}; width: 32px; height: 32px; font-size: 14px;">
+                            <i class="bi {{ cat_meta[0] }}"></i>
+                        </div>
+                        <span class="fw-bold text-dark">{{ e['title'] }}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge-category {{ cat_meta[3] }}">
+                        <i class="bi {{ cat_meta[0] }}" style="font-size: 10px;"></i>
+                        {{ e['category'] }}
+                    </span>
+                </td>
+                <td class="text-secondary small">{{ e['expense_date'] }}</td>
+                <td class="text-end pe-4 fw-bold text-dark">₹{{ "%.2f"|format(e['amount']) }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <p class="mb-2">No expenses recorded yet.</p>
+            <a href="{{ url_for('add_expense') }}" class="btn btn-primary btn-sm rounded-pill px-4">+ Add Expense</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
 
-    if category:
-        query += " AND category = %s"
-        params.append(category)
-
-    query += " ORDER BY expense_date DESC, id DESC"
-
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    return render_template("expenses.html", expenses=rows, search=search, category=category)
-
-@app.route("/add-expense", methods=["GET", "POST"])
-@login_required
-def add_expense():
-    if request.method == "POST":
-        title = request.form["title"].strip()
-        amount = request.form["amount"]
-        category = request.form["category"]
-        expense_date = request.form["expense_date"]
-        notes = request.form.get("notes", "").strip()
-
-        try:
-            amount = float(amount)
-            if amount <= 0:
-                raise ValueError
-        except ValueError:
-            flash("Please enter a valid positive amount.", "danger")
-            return render_template("add_expense.html")
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO expenses
-            (user_id, title, amount, category, expense_date, notes, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (
-            session["user_id"], title, amount, category,
-            expense_date, notes, datetime.now().isoformat()
-        ))
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        flash("Expense added successfully.", "success")
-        return redirect(url_for("expenses"))
-
-    return render_template("add_expense.html")
-
-@app.route("/edit-expense/<int:expense_id>", methods=["GET", "POST"])
-@login_required
-def edit_expense(expense_id):
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute(
-        "SELECT * FROM expenses WHERE id = %s AND user_id = %s",
-        (expense_id, session["user_id"])
-    )
-    expense = cursor.fetchone()
-
-    if not expense:
-        cursor.close()
-        conn.close()
-        flash("Expense not found.", "danger")
-        return redirect(url_for("expenses"))
-
-    if request.method == "POST":
-        title = request.form["title"].strip()
-        amount = request.form["amount"]
-        category = request.form["category"]
-        expense_date = request.form["expense_date"]
-        notes = request.form.get("notes", "").strip()
-
-        try:
-            amount = float(amount)
-            if amount <= 0:
-                raise ValueError
-        except ValueError:
-            cursor.close()
-            conn.close()
-            flash("Please enter a valid positive amount.", "danger")
-            return render_template("edit_expense.html", expense=expense)
-
-        cursor.execute("""
-            UPDATE expenses
-            SET title = %s, amount = %s, category = %s, expense_date = %s, notes = %s
-            WHERE id = %s AND user_id = %s
-        """, (
-            title, amount, category, expense_date, notes,
-            expense_id, session["user_id"]
-        ))
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        flash("Expense updated successfully.", "success")
-        return redirect(url_for("expenses"))
-
-    cursor.close()
-    conn.close()
-    return render_template("edit_expense.html", expense=expense)
-
-@app.route("/delete-expense/<int:expense_id>", methods=["GET", "POST"])
-@login_required
-def delete_expense(expense_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "DELETE FROM expenses WHERE id = %s AND user_id = %s",
-        (expense_id, session["user_id"])
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest" or request.is_json:
-        return jsonify({"success": True, "message": "Expense deleted."})
-
-    flash("Expense deleted.", "success")
-    return redirect(url_for("expenses"))
-
-@app.route("/reports")
-@login_required
-def reports():
-    from datetime import timedelta # Imported here to handle date math
-    
-    filter_type = request.args.get("filter", "all")
-    
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    
-    query = "SELECT * FROM expenses WHERE user_id = %s"
-    params = [session["user_id"]]
-    
-    now = datetime.now()
-    
-    if filter_type == "this_month":
-        query += " AND expense_date LIKE %s"
-        params.append(f"{now.strftime('%Y-%m')}%")
-    elif filter_type == "last_month":
-        last_month = (now.replace(day=1) - timedelta(days=1))
-        query += " AND expense_date LIKE %s"
-        params.append(f"{last_month.strftime('%Y-%m')}%")
-    elif filter_type == "last_3_months":
-        query += " AND expense_date >= %s"
-        params.append((now - timedelta(days=90)).strftime('%Y-%m-%d'))
-    elif filter_type == "last_6_months":
-        query += " AND expense_date >= %s"
-        params.append((now - timedelta(days=180)).strftime('%Y-%m-%d'))
-        
-    query += " ORDER BY expense_date DESC"
-    
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    
-    return render_template("reports.html", expenses=rows, current_filter=filter_type)
-
-@app.route("/api/chart-data")
-@login_required
-def chart_data():
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    
-    # 1. Lifetime category totals
-    cursor.execute(
-        "SELECT category, SUM(amount) AS total FROM expenses WHERE user_id = %s GROUP BY category ORDER BY total DESC",
-        (session["user_id"],)
-    )
-    rows = cursor.fetchall()
-
-    # 2. Monthly trend
-    cursor.execute("""
-        SELECT SUBSTRING(expense_date, 1, 7) AS month, SUM(amount) AS total
-        FROM expenses
-        WHERE user_id = %s
-        GROUP BY month
-        ORDER BY month
-    """, (session["user_id"],))
-    monthly = cursor.fetchall()
-    
-    # 3. Selected month category totals (defaults to current month if none requested)
-    selected_month = request.args.get("month", datetime.now().strftime("%Y-%m"))
-    cursor.execute("""
-        SELECT category, SUM(amount) AS total
-        FROM expenses
-        WHERE user_id = %s AND expense_date LIKE %s
-        GROUP BY category
-        ORDER BY total DESC
-    """, (session["user_id"], f"{selected_month}%"))
-    selected_month_rows = cursor.fetchall()
-    
-    cursor.close()
-    conn.close()
-
-    return jsonify({
-        "categories": [r["category"] for r in rows],
-        "category_totals": [round(r["total"], 2) for r in rows],
-        "selected_month_categories": [r["category"] for r in selected_month_rows],
-        "selected_month_category_totals": [round(r["total"], 2) for r in selected_month_rows],
-        "months": [r["month"] for r in monthly],
-        "monthly_totals": [round(r["total"], 2) for r in monthly]
-    })
-
-@app.route("/ai-analysis")
-@login_required
-def ai_analysis():
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute(
-        "SELECT * FROM expenses WHERE user_id = %s ORDER BY expense_date",
-        (session["user_id"],)
-    )
-    rows = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    result = analyze_spending(rows)
-    return render_template("ai_analysis.html", result=result)
-
-@app.context_processor
-def inject_now():
-    return {"now": datetime.now().strftime("%Y-%m-%d")}
-
-if __name__ == '__main__':
-    # Only runs during local testing, not on Render
-    try:
-        init_db()
-    except Exception as e:
-        print("Set your DATABASE_URL environment variable to run locally.")
-    app.run(debug=False, use_reloader=False, threaded=True)
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
