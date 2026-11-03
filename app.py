@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime
 from ai.analysis import analyze_spending
+from datetime import datetime
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-production-secret-key")
@@ -137,7 +139,9 @@ def dashboard():
 
     total = sum(row["amount"] for row in expenses)
     count = len(expenses)
-    current_month_count = sum(1 for row in expenses if row["expense_date"].startswith(current_month))
+    current_month = datetime.now().strftime('%Y-%m')
+    current_month_count = sum(1 for row in expenses if str(row["expense_date"]).startswith(current_month))
+
 
 
     now = datetime.now()
@@ -165,7 +169,8 @@ def dashboard():
         expenses=expenses[:5],
         total=total,
         count=count,
-        current_month_count = sum(1 for row in expenses if row["expense_date"].startswith(current_month)),
+        current_month = datetime.now().strftime('%Y-%m')
+        current_month_count = sum(1 for row in expenses if str(row["expense_date"]).startswith(current_month)),
         monthly_total=monthly_total,
         last_month_total=last_month_total,
         highest_category=highest_category
