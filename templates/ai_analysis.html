@@ -40,7 +40,7 @@
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Top Spending Category</h5>
-                    <h3 class="fw-bold my-1 text-primary">{{ result.top_category }}</h3>
+                    <h3 id="aiTopCategoryDisplay" class="fw-bold my-1 text-primary">{{ result.top_category }}</h3>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@
             <ul id="list-total" class="list-group list-group-flush breakdown-list d-none">
             {% if result.category_breakdown_total %}
                 {% for category, amount in result.category_breakdown_total.items() %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 expense-item" data-category="{{ category }}" data-amount="{{ amount }}">
                         {{ category }}
                         <span class="fw-bold">₹{{ "%.2f"|format(amount) }}</span>
                     </li>
@@ -88,7 +88,7 @@
             <ul id="list-{{ month }}" class="list-group list-group-flush breakdown-list d-none">
                 {% if breakdown %}
                     {% for category, amount in breakdown.items() %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 expense-item" data-category="{{ category }}" data-amount="{{ amount }}">
                             {{ category }}
                             <span class="fw-bold">₹{{ "%.2f"|format(amount) }}</span>
                         </li>
@@ -114,7 +114,6 @@
     document.addEventListener("DOMContentLoaded", function() {
         const select = document.getElementById("analysisMonthSelect");
         
-        // Format the dynamically added YYYY-MM options to "Mon YYYY"
         Array.from(select.options).forEach(opt => {
             if (opt.value !== 'total' && opt.text === opt.value) {
                 opt.text = formatMonthOption(opt.value);
@@ -122,18 +121,30 @@
         });
 
         function updateList() {
-            // Hide all lists
             document.querySelectorAll('.breakdown-list').forEach(el => el.classList.add('d-none'));
-            // Show the selected one
             const selectedList = document.getElementById('list-' + select.value);
+            
             if (selectedList) {
                 selectedList.classList.remove('d-none');
+                
+                // Calculate dynamically updating Top Category
+                let maxCat = "None";
+                let maxVal = -1;
+                const items = selectedList.querySelectorAll('.expense-item');
+                
+                items.forEach(item => {
+                    let amount = parseFloat(item.getAttribute('data-amount')) || 0;
+                    if (amount > maxVal) {
+                        maxVal = amount;
+                        maxCat = item.getAttribute('data-category');
+                    }
+                });
+                
+                document.getElementById('aiTopCategoryDisplay').innerText = items.length > 0 ? maxCat : "None";
             }
         }
 
         select.addEventListener('change', updateList);
-        
-        // Force default view to current month
         select.value = '{{ result.current_month }}';
         updateList();
     });
