@@ -17,6 +17,18 @@ function formatCurrency(val) {
     });
 }
 
+function updateTopCategoryDisplay(labels, values) {
+    const topCatDisplay = document.getElementById('topCategoryDisplay');
+    if (!topCatDisplay) return;
+
+    if (labels && labels.length > 0 && values && values.length > 0) {
+        // Since categories are ordered by total descending, the first element is the highest
+        topCatDisplay.innerText = labels[0];
+    } else {
+        topCatDisplay.innerText = "No data";
+    }
+}
+
 function renderCategoryChart(data, type = 'total') {
     const ctx = document.getElementById("categoryChart");
     const emptyState = document.getElementById("categoryChartEmpty");
@@ -24,6 +36,9 @@ function renderCategoryChart(data, type = 'total') {
 
     let labels = type === 'total' ? data.categories : data.selected_month_categories;
     let values = type === 'total' ? data.category_totals : data.selected_month_category_totals;
+
+    // Update the Top Category card text dynamically based on current selection
+    updateTopCategoryDisplay(labels, values);
 
     if (!labels || labels.length === 0) {
         ctx.style.display = 'none';
@@ -157,27 +172,22 @@ function initDashboardCharts() {
             cachedChartData = data;
             
             const select = document.getElementById("pieMonthSelect");
-            // Dynamically calculate the current month directly in JS
             const d = new Date();
             const currentMonthStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
 
             if (select) {
-                // Clear any hardcoded HTML options
                 select.innerHTML = '';
                 
-                // Set "This Month" as the first option
                 const optThis = document.createElement('option');
                 optThis.value = currentMonthStr;
                 optThis.textContent = "This Month";
                 select.appendChild(optThis);
 
-                // Set "Lifetime Total" as the second option
                 const optTotal = document.createElement('option');
                 optTotal.value = 'total';
                 optTotal.textContent = "Lifetime Total";
                 select.appendChild(optTotal);
 
-                // Add any older historical months
                 if (data.months) {
                     [...data.months].reverse().forEach(m => {
                         if (m !== currentMonthStr) {
@@ -191,7 +201,6 @@ function initDashboardCharts() {
                 select.value = currentMonthStr;
             }
 
-            // Render the 'month' type immediately on page load
             renderCategoryChart(data, 'month');
             renderMonthlyChart(data, currentMonthlyChartType);
         })
