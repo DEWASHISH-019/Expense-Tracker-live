@@ -62,14 +62,16 @@
             </div>
         </div>
     </div>
-        <!-- Bottom Row: 2 Cards -->
+    
+    <!-- Bottom Row: 2 Cards -->
     <div class="col-md-6">
         <div class="stat-card d-flex align-items-center justify-content-between">
             <div>
                 <div class="d-flex align-items-center gap-2 mb-1">
                     <span class="mb-0 text-muted" style="font-size: 0.875rem;">Transactions</span>
-                            <select class="form-select form-select-sm shadow-none" style="width: max-content; padding: 2px 28px 2px 8px; font-size: 0.75rem; height: 26px; border-radius: 4px; border: 1px solid #e2e8f0; cursor: pointer; background-color: #f8fafc; color: #475569;" onchange="document.getElementById('txnCountDisplay').innerText = this.value;">
+                    <select class="form-select form-select-sm shadow-none" style="width: max-content; padding: 2px 28px 2px 8px; font-size: 0.75rem; height: 26px; border-radius: 4px; border: 1px solid #e2e8f0; cursor: pointer; background-color: #f8fafc; color: #475569;" onchange="document.getElementById('txnCountDisplay').innerText = this.value;">
                         <option value="{{ current_month_count }}">This Month</option>
+                        <option value="{{ last_month_count }}">Last Month</option>
                         <option value="{{ count }}">Lifetime Total</option>
                     </select>
                 </div>
@@ -91,6 +93,7 @@
             </div>
         </div>
     </div>
+</div>
 
 <div class="row g-4">
     <!-- Category Breakdown Pie Chart -->
