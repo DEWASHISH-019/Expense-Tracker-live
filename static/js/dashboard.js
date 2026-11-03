@@ -37,8 +37,15 @@ function renderCategoryChart(data, type = 'total') {
     let labels = type === 'total' ? data.categories : data.selected_month_categories;
     let values = type === 'total' ? data.category_totals : data.selected_month_category_totals;
 
-    // Update the Top Category card text dynamically based on current selection
+    // Update the Top Category card text dynamically
     updateTopCategoryDisplay(labels, values);
+
+    // --- NEW: Update Transactions Count dynamically ---
+    const txnCountDisplay = document.getElementById('txnCountDisplay');
+    if (txnCountDisplay) {
+        txnCountDisplay.innerText = type === 'total' ? data.total_txn_count : data.selected_month_txn_count;
+    }
+    // ------------------------------------------------
 
     if (!labels || labels.length === 0) {
         ctx.style.display = 'none';
