@@ -96,17 +96,16 @@
             background-color: #1e1e1e !important;
             border-color: #333 !important;
         }
-                /* Fix Chart.js elements for Dark Mode */
+        /* Complete Dark Mode Fix for Chart.js */
         html[data-bs-theme="dark"] .card canvas {
-            color: #94a3b8 !important; /* Soft grey for chart labels and grid lines */
+            color: #94a3b8 !important; /* Soft grey text for axis labels */
         }
         
-        /* Blend doughnut/pie chart slice borders with the dark card background */
+        /* Forces Chart.js grid lines and scales to use a subtle dark-mode grey */
         html[data-bs-theme="dark"] .card .chart-container,
         html[data-bs-theme="dark"] canvas {
             --bs-body-bg: #1e1e1e;
-            }
-        
+        }
     </style>
 
 </head>
