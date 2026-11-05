@@ -794,4 +794,26 @@ body {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* --- Dark Mode Overrides --- */
+[data-bs-theme="dark"] body {
+    background-color: #121212 !important;
+    color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .bg-white,
+[data-bs-theme="dark"] .navbar {
+    background-color: #1e1e1e !important;
+    border-color: #333 !important;
+}
+
+[data-bs-theme="dark"] .text-dark,
+[data-bs-theme="dark"] .navbar-brand {
+    color: #f8f9fa !important;
+}
+
+[data-bs-theme="dark"] .card-title,
+[data-bs-theme="dark"] .text-muted {
+    color: #a0aec0 !important;
+}
 
