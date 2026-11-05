@@ -794,7 +794,7 @@ body {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
 }
-/* --- Ultimate Dark Mode Overrides --- */
+/* --- Ultimate Dark Mode Overrides V3 --- */
 
 /* 1. Global Background & Text */
 html[data-bs-theme="dark"], 
@@ -803,7 +803,7 @@ html[data-bs-theme="dark"] body {
     color: #e2e8f0 !important;
 }
 
-/* 2. Fix the Navbar & 3-Line Hamburger Menu */
+/* 2. Fix the Navbar & Force 3-Line Hamburger Menu to Pure White */
 html[data-bs-theme="dark"] .navbar,
 html[data-bs-theme="dark"] .app-nav,
 html[data-bs-theme="dark"] header,
@@ -818,24 +818,25 @@ html[data-bs-theme="dark"] .navbar-nav a {
     color: #f8f9fa !important;
     opacity: 1 !important;
 }
-/* Forces the 3 lines to turn white */
+/* Replaces the black SVG with a pure white SVG so it never fails */
 html[data-bs-theme="dark"] .navbar-toggler-icon {
-    filter: invert(1) grayscale(100%) brightness(200%) !important;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
+    filter: none !important;
 }
 
-/* 3. Fix ALL Dashboard/Expense White Blocks */
-/* Adding .shadow-sm catches all custom blocks that aren't using .card */
-html[data-bs-theme="dark"] .card,
-html[data-bs-theme="dark"] .bg-white,
-html[data-bs-theme="dark"] .shadow-sm,
-html[data-bs-theme="dark"] .card-body,
-html[data-bs-theme="dark"] .card-header,
-html[data-bs-theme="dark"] .list-group-item {
+/* 3. Brute-Force ALL Dashboard/Expense White Blocks */
+/* Targeting 'div' explicitly adds weight to override Bootstrap's !important */
+html[data-bs-theme="dark"] div.card,
+html[data-bs-theme="dark"] div.bg-white,
+html[data-bs-theme="dark"] div.shadow-sm,
+html[data-bs-theme="dark"] div.card-body,
+html[data-bs-theme="dark"] div.card-header,
+html[data-bs-theme="dark"] div.list-group-item {
     background-color: #1e1e1e !important;
     border-color: #333 !important;
 }
 
-/* 4. Fix Forms, Inputs, & the Print Statement Button */
+/* 4. Fix Category Tags (.quick-tag-btn), Forms, & Inputs */
 html[data-bs-theme="dark"] .form-control,
 html[data-bs-theme="dark"] .form-select,
 html[data-bs-theme="dark"] .btn-light,
@@ -845,13 +846,27 @@ html[data-bs-theme="dark"] .btn-outline-dark {
     color: #f8f9fa !important;
     border-color: #444 !important;
 }
+
+/* Styles your custom category buttons (Food, Groceries, etc.) */
+html[data-bs-theme="dark"] .quick-tag-btn {
+    background-color: #2a2a2a !important;
+    color: #f8f9fa !important;
+    border-color: #555 !important;
+}
+html[data-bs-theme="dark"] .quick-tag-btn:hover {
+    background-color: #3a3a3a !important;
+}
+
 html[data-bs-theme="dark"] .form-control::placeholder {
     color: #a0aec0 !important;
 }
 
-/* 5. Fix Text (Without breaking colored AI amounts!) */
-/* We only target .text-dark so your green/red/blue classes still work */
+/* 5. Fix Text Values Safely (Preserves your Colored Symbols/Amounts!) */
 html[data-bs-theme="dark"] .text-dark {
+    color: #f8f9fa !important;
+}
+/* Converts bold black numbers to white, UNLESS they have a specific color class */
+html[data-bs-theme="dark"] .fw-bold:not(.text-primary):not(.text-success):not(.text-danger):not(.text-warning):not(.text-info) {
     color: #f8f9fa !important;
 }
 html[data-bs-theme="dark"] .text-muted,
