@@ -794,49 +794,68 @@ body {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
 }
-/* --- Dark Mode Overrides (Updated) --- */
-/* 1. Main Background */
-[data-bs-theme="dark"] body {
+/* --- Bulletproof Dark Mode Overrides --- */
+
+/* 1. Global Background & Text */
+html[data-bs-theme="dark"], 
+html[data-bs-theme="dark"] body {
     background-color: #121212 !important;
     color: #e2e8f0 !important;
 }
 
-/* 2. Fix Navbar Links (Invisible Text) */
-[data-bs-theme="dark"] .nav-link,
-[data-bs-theme="dark"] .navbar-nav a {
+/* 2. Fix the Navbar & Top Section */
+html[data-bs-theme="dark"] .navbar,
+html[data-bs-theme="dark"] .app-nav,
+html[data-bs-theme="dark"] header,
+html[data-bs-theme="dark"] .sticky-top {
+    background-color: #1e1e1e !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+html[data-bs-theme="dark"] .navbar-brand,
+html[data-bs-theme="dark"] .navbar-brand span,
+html[data-bs-theme="dark"] .nav-link,
+html[data-bs-theme="dark"] .navbar-nav a {
     color: #f8f9fa !important;
     opacity: 1 !important;
 }
-[data-bs-theme="dark"] .navbar-toggler-icon {
-    filter: invert(1); /* Turns the mobile hamburger menu icon white */
+html[data-bs-theme="dark"] .navbar-toggler-icon {
+    filter: invert(1);
 }
 
-/* 3. Fix Cards, Filter Blocks, and Lists */
-[data-bs-theme="dark"] .card,
-[data-bs-theme="dark"] .bg-white,
-[data-bs-theme="dark"] .list-group-item {
+/* 3. Fix Cards, Charts, & Blocks */
+html[data-bs-theme="dark"] .card,
+html[data-bs-theme="dark"] .bg-white,
+html[data-bs-theme="dark"] .card-body,
+html[data-bs-theme="dark"] .card-header,
+html[data-bs-theme="dark"] .list-group-item {
     background-color: #1e1e1e !important;
     color: #f8f9fa !important;
     border-color: #333 !important;
 }
 
-/* 4. Fix Inputs (Search bars & dropdowns) */
-[data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
+/* 4. Fix Forms & Inputs */
+html[data-bs-theme="dark"] .form-control,
+html[data-bs-theme="dark"] .form-select {
     background-color: #2a2a2a !important;
     color: #f8f9fa !important;
     border-color: #444 !important;
 }
-[data-bs-theme="dark"] .form-control::placeholder {
+html[data-bs-theme="dark"] .form-control::placeholder {
     color: #a0aec0 !important;
 }
 
-/* 5. Fix Text Colors */
-[data-bs-theme="dark"] .text-dark {
+/* 5. Fix All Headings & Text */
+html[data-bs-theme="dark"] h1,
+html[data-bs-theme="dark"] h2,
+html[data-bs-theme="dark"] h3,
+html[data-bs-theme="dark"] h4,
+html[data-bs-theme="dark"] h5,
+html[data-bs-theme="dark"] h6,
+html[data-bs-theme="dark"] .text-dark {
     color: #f8f9fa !important;
 }
-[data-bs-theme="dark"] .text-muted,
-[data-bs-theme="dark"] .text-secondary {
+html[data-bs-theme="dark"] .text-muted,
+html[data-bs-theme="dark"] .text-secondary {
     color: #a0aec0 !important;
 }
-
