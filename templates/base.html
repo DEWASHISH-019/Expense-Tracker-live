@@ -55,28 +55,29 @@
             border-color: #444 !important;
         }
 
-        /* 5. Safe Text Colors (Restores Green & Grey!) */
+        /* 5. Safe Text Colors (Restores AI Insights Green & Grey!) */
         html[data-bs-theme="dark"] .text-dark {
             color: #ffffff !important;
         }
         
-        /* Forces standard headings to white, UNLESS they have specific colors */
+        /* Forces standard headings to white, UNLESS they have specific color classes */
         html[data-bs-theme="dark"] h1:not(.text-secondary), 
         html[data-bs-theme="dark"] h2:not(.text-secondary), 
-        html[data-bs-theme="dark"] h3:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger), 
+        html[data-bs-theme="dark"] h3:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger):not(.text-success), 
         html[data-bs-theme="dark"] h4:not(.text-secondary), 
         html[data-bs-theme="dark"] h5:not(.text-secondary), 
         html[data-bs-theme="dark"] h6:not(.text-secondary),
-        html[data-bs-theme="dark"] .fw-bold:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger) {
+        html[data-bs-theme="dark"] .fw-bold:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger):not(.text-success) {
             color: #ffffff !important;
         }
 
-        /* Explicitly protects your custom inline green */
-        html[data-bs-theme="dark"] [style*="#059669"] {
+        /* Explicitly protects custom inline green and bootstrap green */
+        html[data-bs-theme="dark"] [style*="#059669"],
+        html[data-bs-theme="dark"] .text-success {
             color: #059669 !important; 
         }
 
-        /* Restores the slate grey for "Last Month" and other subtitles */
+        /* Restores the slate grey for "Last Month" */
         html[data-bs-theme="dark"] .text-muted,
         html[data-bs-theme="dark"] .text-secondary {
             color: #94a3b8 !important; 
