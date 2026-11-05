@@ -69,7 +69,7 @@ function renderCategoryChart(data, type = 'total') {
             labels: labels,
             datasets: [{
                 data: values, backgroundColor: modernPalette.slice(0, labels.length),
-                borderWidth: 0, spacing: 5, hoverOffset: 8, borderRadius: 5, hoverOffset: 8, borderRadius: 5
+                borderWidth: 0, spacing: 3, hoverOffset: 8, borderRadius: 5, hoverOffset: 8, borderRadius: 5
             }]
         },
         options: {
