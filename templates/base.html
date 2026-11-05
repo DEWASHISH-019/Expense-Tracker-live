@@ -72,6 +72,16 @@
         html[data-bs-theme="dark"] .fw-bold:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger):not(.text-success) {
             color: #ffffff !important;
         }
+            
+        /* Forces graph and chart cards to turn dark grey ONLY in dark mode */
+        html[data-bs-theme="dark"] .card,
+        html[data-bs-theme="dark"] .shadow-sm,
+        html[data-bs-theme="dark"] div[class*="shadow"] {
+            background-color: #1e1e1e !important;
+            border-color: #333 !important;
+            color: #e2e8f0 !important;
+        }
+
 
         /* Explicitly protects custom inline green and bootstrap green */
         html[data-bs-theme="dark"] [style*="#059669"],
