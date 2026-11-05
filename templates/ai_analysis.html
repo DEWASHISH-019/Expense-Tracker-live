@@ -44,6 +44,52 @@
                 </div>
             </div>
         </div>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">AI Spending Analysis</h2>
+    
+    <div class="row">
+        <!-- First Row: 3 metrics -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Spent</h5>
+                    <h3 class="fw-bold my-1 text-dark">₹{{ "%.2f"|format(result.total_spent) }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">This Month</h5>
+                    <h3 class="fw-bold" style="color: #059669 !important;">₹{{ "%.2f"|format(result.monthly_total) }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Last Month</h5>
+                    <h3 class="fw-bold" style="color: #94a3b8 !important;">₹{{ "%.2f"|format(result.last_month_total) }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Second Row: 2 metrics -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Top Spending Category</h5>
+                    <h3 id="aiTopCategoryDisplay" class="fw-bold my-1 text-primary">{{ result.top_category }}</h3>
+                </div>
+            </div>
+        </div>
 
         <div class="col-md-6 mb-3">
             <div class="card shadow-sm h-100">
