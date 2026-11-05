@@ -19,7 +19,7 @@
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">This Month</h5>
-                    <h3 class="fw-bold" style="color: #059669 !important;">₹{{ "%.2f"|format(result.monthly_total) }}</h3>
+                    <h3 class="fw-bold" style="color: #059669 !important;">₹{{ "%.2f"|format(result.breakdown_by_month.get(result.current_month, {}) | sum) }}</h3>
                 </div>
             </div>
         </div>
@@ -28,11 +28,10 @@
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Last Month</h5>
-                    <h3 class="fw-bold" style="color: #94a3b8 !important;">₹{{ "%.2f"|format(last_month_total) }}</h3>
+                    <h3 class="fw-bold" style="color: #94a3b8 !important;">₹{{ "%.2f"|format(result.last_month_total if result.last_month_total is defined else 0) }}</h3>
                 </div>
             </div>
         </div>
-    </div>
     
     <div class="row">
         <!-- Second Row: 2 metrics -->
