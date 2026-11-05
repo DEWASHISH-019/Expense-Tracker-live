@@ -33,6 +33,11 @@
                 <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('reports') }}"><i class="bi bi-bar-chart-fill me-1 opacity-75"></i> Reports</a></li>
                 <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('ai_analysis') }}"><i class="bi bi-stars me-1 opacity-75"></i> AI Insights</a></li>
                 <li class="nav-item ms-lg-3"><a class="btn btn-outline-dark btn-sm px-3 rounded-pill" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-1"></i> Logout</a></li>
+                <li class="nav-item ms-lg-3 d-flex align-items-center justify-content-center">
+    <button id="themeToggle" class="btn btn-link text-secondary shadow-none p-0" style="text-decoration: none; font-size: 1.25rem;">
+        <i id="themeIcon" class="bi bi-moon-stars-fill"></i>
+    </button>
+            </li>
             </ul>
             {% else %}
             <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
@@ -42,6 +47,11 @@
                         <span>Get Started Free</span>
                         <i class="bi bi-arrow-right-short fs-6"></i>
                     </a>
+                </li>
+                <li class="nav-item ms-lg-3 d-flex align-items-center justify-content-center">
+    <button id="themeToggle" class="btn btn-link text-secondary shadow-none p-0" style="text-decoration: none; font-size: 1.25rem;">
+        <i id="themeIcon" class="bi bi-moon-stars-fill"></i>
+    </button>
                 </li>
             </ul>
             {% endif %}
