@@ -101,6 +101,18 @@
         html[data-bs-theme="dark"] .card canvas { color: #94a3b8 !important; }
         html[data-bs-theme="dark"] .card .chart-container, html[data-bs-theme="dark"] canvas { --bs-body-bg: #1e1e1e; }
 
+        /* 6. Navbar Highlights & Print Button Border */
+        html[data-bs-theme="dark"] .navbar-nav .nav-link:hover,
+        html[data-bs-theme="dark"] .navbar-nav .nav-link:focus,
+        html[data-bs-theme="dark"] .navbar-nav .nav-link.active {
+            background-color: #2a2a2a !important; /* Soft dark grey highlight */
+            color: #ffffff !important;            /* Crisp white text */
+        }
+
+        html[data-bs-theme="dark"] .btn-light {
+            border: 2px solid #ffffff !important; /* Thick white border for Print button */
+        }
+        
     </style>
 
 </head>
