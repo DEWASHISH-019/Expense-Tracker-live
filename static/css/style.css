@@ -794,7 +794,7 @@ body {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
 }
-/* --- Bulletproof Dark Mode Overrides --- */
+/* --- Ultimate Dark Mode Overrides --- */
 
 /* 1. Global Background & Text */
 html[data-bs-theme="dark"], 
@@ -803,7 +803,7 @@ html[data-bs-theme="dark"] body {
     color: #e2e8f0 !important;
 }
 
-/* 2. Fix the Navbar & Top Section */
+/* 2. Fix the Navbar & 3-Line Hamburger Menu */
 html[data-bs-theme="dark"] .navbar,
 html[data-bs-theme="dark"] .app-nav,
 html[data-bs-theme="dark"] header,
@@ -811,7 +811,6 @@ html[data-bs-theme="dark"] .sticky-top {
     background-color: #1e1e1e !important;
     border-bottom: 1px solid #333 !important;
 }
-
 html[data-bs-theme="dark"] .navbar-brand,
 html[data-bs-theme="dark"] .navbar-brand span,
 html[data-bs-theme="dark"] .nav-link,
@@ -819,24 +818,29 @@ html[data-bs-theme="dark"] .navbar-nav a {
     color: #f8f9fa !important;
     opacity: 1 !important;
 }
+/* Forces the 3 lines to turn white */
 html[data-bs-theme="dark"] .navbar-toggler-icon {
-    filter: invert(1);
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
 }
 
-/* 3. Fix Cards, Charts, & Blocks */
+/* 3. Fix ALL Dashboard/Expense White Blocks */
+/* Adding .shadow-sm catches all custom blocks that aren't using .card */
 html[data-bs-theme="dark"] .card,
 html[data-bs-theme="dark"] .bg-white,
+html[data-bs-theme="dark"] .shadow-sm,
 html[data-bs-theme="dark"] .card-body,
 html[data-bs-theme="dark"] .card-header,
 html[data-bs-theme="dark"] .list-group-item {
     background-color: #1e1e1e !important;
-    color: #f8f9fa !important;
     border-color: #333 !important;
 }
 
-/* 4. Fix Forms & Inputs */
+/* 4. Fix Forms, Inputs, & the Print Statement Button */
 html[data-bs-theme="dark"] .form-control,
-html[data-bs-theme="dark"] .form-select {
+html[data-bs-theme="dark"] .form-select,
+html[data-bs-theme="dark"] .btn-light,
+html[data-bs-theme="dark"] .bg-light,
+html[data-bs-theme="dark"] .btn-outline-dark {
     background-color: #2a2a2a !important;
     color: #f8f9fa !important;
     border-color: #444 !important;
@@ -845,13 +849,8 @@ html[data-bs-theme="dark"] .form-control::placeholder {
     color: #a0aec0 !important;
 }
 
-/* 5. Fix All Headings & Text */
-html[data-bs-theme="dark"] h1,
-html[data-bs-theme="dark"] h2,
-html[data-bs-theme="dark"] h3,
-html[data-bs-theme="dark"] h4,
-html[data-bs-theme="dark"] h5,
-html[data-bs-theme="dark"] h6,
+/* 5. Fix Text (Without breaking colored AI amounts!) */
+/* We only target .text-dark so your green/red/blue classes still work */
 html[data-bs-theme="dark"] .text-dark {
     color: #f8f9fa !important;
 }
