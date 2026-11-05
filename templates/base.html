@@ -122,17 +122,12 @@
             background-color: #1e1e1e !important;
             border-color: #1e1e1e !important;
         }
-        /* 9. Add Expense Button Color Shift */
-        .btn-add-expense {
-            background-color: #2563eb !important; /* Vibrant Blue for Light Mode */
+        /* 9. Lock Add Expense Button to Blue in ALL modes */
+        .btn-add-expense,
+        html[data-bs-theme="dark"] .btn-add-expense {
+            background-color: #2563eb !important;
             color: #ffffff !important;
             border-color: #2563eb !important;
-        }
-
-        html[data-bs-theme="dark"] .btn-add-expense {
-            background-color: #e2e8f0 !important; /* Light Grey for Dark Mode */
-            color: #1e1e1e !important; /* Dark text for contrast */
-            border-color: #e2e8f0 !important;
         }
         
     </style>
