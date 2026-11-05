@@ -72,16 +72,6 @@
         html[data-bs-theme="dark"] .fw-bold:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger):not(.text-success) {
             color: #ffffff !important;
         }
-            
-        /* Forces graph and chart cards to turn dark grey ONLY in dark mode */
-        html[data-bs-theme="dark"] .card,
-        html[data-bs-theme="dark"] .shadow-sm,
-        html[data-bs-theme="dark"] div[class*="shadow"] {
-            background-color: #1e1e1e !important;
-            border-color: #333 !important;
-            color: #e2e8f0 !important;
-        }
-
 
         /* Explicitly protects custom inline green and bootstrap green */
         html[data-bs-theme="dark"] [style*="#059669"],
@@ -94,6 +84,19 @@
         html[data-bs-theme="dark"] .text-secondary {
             color: #94a3b8 !important; 
         }
+        /* 6. Force Dynamic Dark Mode for All Chart & Graph Containers */
+        html[data-bs-theme="dark"] canvas,
+        html[data-bs-theme="dark"] .chartjs-render-monitor,
+        html[data-bs-theme="dark"] div[class*="chart"] {
+            background-color: transparent !important;
+        }
+        
+        html[data-bs-theme="dark"] .card,
+        html[data-bs-theme="dark"] .shadow-sm {
+            background-color: #1e1e1e !important;
+            border-color: #333 !important;
+        }
+        
     </style>
 
 </head>
