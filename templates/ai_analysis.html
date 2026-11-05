@@ -1,197 +1,337 @@
+
 {% extends "base.html" %}
 
+{% block title %}AI Spending Analysis - ExpenseTracker{% endblock %}
+
 {% block content %}
+
 <div class="container mt-4">
+
     <h2 class="mb-4">AI Spending Analysis</h2>
-    
+
+    <!-- First Row: 3 Metrics -->
+
     <div class="row">
-        <!-- First Row: 3 metrics -->
+
+        <!-- Total Spent -->
+
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Total Spent</h5>
-                    <h3 class="fw-bold my-1 text-dark">₹{{ "%.2f"|format(result.total_spent) }}</h3>
+                    <h3 class="fw-bold my-1 text-dark">
+                        ₹{{ "%.2f"|format(result.total_spent) }}
+                    </h3>
                 </div>
             </div>
         </div>
 
-         <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">This Month</h5>
-                    <h3 class="fw-bold" style="color: #059669 !important;">₹{{ "%.2f"|format(result.breakdown_by_month.get(result.current_month, {}) | sum) }}</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Last Month</h5>
-                    <h3 class="fw-bold" style="color: #94a3b8 !important;">₹{{ "%.2f"|format(result.last_month_total if result.last_month_total is defined else 0) }}</h3>
-                </div>
-            </div>
-        </div>
-    
-    <div class="row">
-        <!-- Second Row: 2 metrics -->
-        <div class="col-md-6 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Top Spending Category</h5>
-                    <h3 id="aiTopCategoryDisplay" class="fw-bold my-1 text-primary">{{ result.top_category }}</h3>
-                </div>
-            </div>
-        </div>
-{% extends "base.html" %}
-
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">AI Spending Analysis</h2>
-    
-    <div class="row">
-        <!-- First Row: 3 metrics -->
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Total Spent</h5>
-                    <h3 class="fw-bold my-1 text-dark">₹{{ "%.2f"|format(result.total_spent) }}</h3>
-                </div>
-            </div>
-        </div>
+        <!-- This Month -->
 
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">This Month</h5>
-                    <h3 class="fw-bold" style="color: #059669 !important;">₹{{ "%.2f"|format(result.monthly_total) }}</h3>
+                    <h3 class="fw-bold" style="color:#059669 !important;">
+                        ₹{{ "%.2f"|format(result.monthly_total) }}
+                    </h3>
                 </div>
             </div>
         </div>
+
+        <!-- Last Month -->
 
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Last Month</h5>
-                    <h3 class="fw-bold" style="color: #94a3b8 !important;">₹{{ "%.2f"|format(result.last_month_total) }}</h3>
+                    <h3 class="fw-bold" style="color:#94a3b8 !important;">
+                        ₹{{ "%.2f"|format(result.last_month_total) }}
+                    </h3>
                 </div>
             </div>
         </div>
+
     </div>
-    
+
+
+    <!-- Second Row: 2 Metrics -->
+
     <div class="row">
-        <!-- Second Row: 2 metrics -->
+
+        <!-- Top Spending Category -->
+
         <div class="col-md-6 mb-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Top Spending Category</h5>
-                    <h3 id="aiTopCategoryDisplay" class="fw-bold my-1 text-primary">{{ result.top_category }}</h3>
+
+                    <h3 id="aiTopCategoryDisplay"
+                        class="fw-bold my-1 text-primary">
+                        {{ result.top_category }}
+                    </h3>
                 </div>
             </div>
         </div>
+
+        <!-- Predicted Spending -->
 
         <div class="col-md-6 mb-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Predicted This Month</h5>
-                    <h3 class="fw-bold my-1 text-danger">₹{{ "%.2f"|format(result.predicted_next_month) }}</h3>
+
+                    <h3 class="fw-bold my-1 text-danger">
+                        ₹{{ "%.2f"|format(result.predicted_next_month) }}
+                    </h3>
                 </div>
             </div>
         </div>
+
     </div>
+
+
+    <!-- Category Breakdown -->
 
     <div class="card shadow-sm mt-3">
+
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
             <h5 class="mb-0">Category Breakdown</h5>
-            <select id="analysisMonthSelect" class="form-select form-select-sm shadow-none" style="width: auto; padding-right: 32px; border-radius: 8px; border: 1px solid #e2e8f0; font-weight: 500; cursor: pointer;">
-                <option value="{{ result.current_month }}">This Month</option>
-                <option value="total">Lifetime Total</option>
+
+            <select id="analysisMonthSelect"
+                    class="form-select form-select-sm shadow-none"
+                    style="width:auto;padding-right:32px;border-radius:8px;border:1px solid #e2e8f0;font-weight:500;cursor:pointer;">
+
+                <option value="{{ result.current_month }}">
+                    This Month
+                </option>
+
+                <option value="total">
+                    Lifetime Total
+                </option>
+
                 {% for m in result.available_months %}
+
                     {% if m != result.current_month %}
-                        <option value="{{ m }}">{{ m }}</option>
+
+                        <option value="{{ m }}">
+                            {{ m }}
+                        </option>
+
                     {% endif %}
+
                 {% endfor %}
+
             </select>
+
         </div>
+
+
         <div class="card-body p-0">
+
             <!-- Lifetime Total List -->
-            <ul id="list-total" class="list-group list-group-flush breakdown-list d-none">
-            {% if result.category_breakdown_total %}
-                {% for category, amount in result.category_breakdown_total.items() %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 expense-item" data-category="{{ category }}" data-amount="{{ amount }}">
-                        {{ category }}
-                        <span class="fw-bold">₹{{ "%.2f"|format(amount) }}</span>
+
+            <ul id="list-total"
+                class="list-group list-group-flush breakdown-list d-none">
+
+                {% if result.category_breakdown_total %}
+
+                    {% for category, amount in result.category_breakdown_total.items() %}
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 expense-item"
+                            data-category="{{ category }}"
+                            data-amount="{{ amount }}">
+
+                            {{ category }}
+
+                            <span class="fw-bold">
+                                ₹{{ "%.2f"|format(amount) }}
+                            </span>
+
+                        </li>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <li class="list-group-item px-4 py-3 text-muted">
+                        No expenses recorded yet.
                     </li>
-                {% endfor %}
-            {% else %}
-                <li class="list-group-item px-4 py-3 text-muted">No expenses recorded yet.</li>
-            {% endif %}
+
+                {% endif %}
+
             </ul>
 
-            <!-- Monthly Lists -->
+
+            <!-- Monthly Breakdown Lists -->
+
             {% for month, breakdown in result.breakdown_by_month.items() %}
-            <ul id="list-{{ month }}" class="list-group list-group-flush breakdown-list d-none">
-                {% if breakdown %}
-                    {% for category, amount in breakdown.items() %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 expense-item" data-category="{{ category }}" data-amount="{{ amount }}">
-                            {{ category }}
-                            <span class="fw-bold">₹{{ "%.2f"|format(amount) }}</span>
+
+                <ul id="list-{{ month }}"
+                    class="list-group list-group-flush breakdown-list d-none">
+
+                    {% if breakdown %}
+
+                        {% for category, amount in breakdown.items() %}
+
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 expense-item"
+                                data-category="{{ category }}"
+                                data-amount="{{ amount }}">
+
+                                {{ category }}
+
+                                <span class="fw-bold">
+                                    ₹{{ "%.2f"|format(amount) }}
+                                </span>
+
+                            </li>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <li class="list-group-item px-4 py-3 text-muted">
+                            No expenses recorded for this month.
                         </li>
-                    {% endfor %}
-                {% else %}
-                    <li class="list-group-item px-4 py-3 text-muted">No expenses recorded for this month.</li>
-                {% endif %}
-            </ul>
+
+                    {% endif %}
+
+                </ul>
+
             {% endfor %}
+
         </div>
+
     </div>
+
 </div>
 
+
+<!-- JavaScript -->
+
 <script>
+
+    // Convert YYYY-MM into readable month format
+
     function formatMonthOption(str) {
-        if (!str || !str.includes('-')) return str;
-        const parts = str.split('-');
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const monthIdx = parseInt(parts[1], 10) - 1;
-        return (monthNames[monthIdx] || parts[1]) + ' ' + parts[0];
-    }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const select = document.getElementById("analysisMonthSelect");
-        
-        Array.from(select.options).forEach(opt => {
-            if (opt.value !== 'total' && opt.text === opt.value) {
-                opt.text = formatMonthOption(opt.value);
-            }
-        });
-
-        function updateList() {
-            document.querySelectorAll('.breakdown-list').forEach(el => el.classList.add('d-none'));
-            const selectedList = document.getElementById('list-' + select.value);
-            
-            if (selectedList) {
-                selectedList.classList.remove('d-none');
-                
-                // Calculate dynamically updating Top Category
-                let maxCat = "None";
-                let maxVal = -1;
-                const items = selectedList.querySelectorAll('.expense-item');
-                
-                items.forEach(item => {
-                    let amount = parseFloat(item.getAttribute('data-amount')) || 0;
-                    if (amount > maxVal) {
-                        maxVal = amount;
-                        maxCat = item.getAttribute('data-category');
-                    }
-                });
-                
-                document.getElementById('aiTopCategoryDisplay').innerText = items.length > 0 ? maxCat : "None";
-            }
+        if (!str || !str.includes('-')) {
+            return str;
         }
 
+        const parts = str.split('-');
+
+        const monthNames = [
+            "Jan", "Feb", "Mar", "Apr",
+            "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        const monthIdx = parseInt(parts[1], 10) - 1;
+
+        return (monthNames[monthIdx] || parts[1]) + ' ' + parts[0];
+
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const select = document.getElementById("analysisMonthSelect");
+
+        const topCategoryDisplay = document.getElementById("aiTopCategoryDisplay");
+
+        if (!select || !topCategoryDisplay) {
+            return;
+        }
+
+
+        // Format dropdown month names
+
+        Array.from(select.options).forEach(function (opt) {
+
+            if (opt.value !== 'total' && opt.text.trim() === opt.value) {
+
+                opt.text = formatMonthOption(opt.value);
+
+            }
+
+        });
+
+
+        // Update category breakdown
+
+        function updateList() {
+
+            // Hide all breakdown lists
+
+            document.querySelectorAll('.breakdown-list').forEach(function (el) {
+
+                el.classList.add('d-none');
+
+            });
+
+
+            // Display selected breakdown
+
+            const selectedList = document.getElementById('list-' + select.value);
+
+
+            if (selectedList) {
+
+                selectedList.classList.remove('d-none');
+
+
+                // Calculate top spending category
+
+                let maxCat = "None";
+
+                let maxVal = -1;
+
+                const items = selectedList.querySelectorAll('.expense-item');
+
+
+                items.forEach(function (item) {
+
+                    const amount = parseFloat(item.getAttribute('data-amount')) || 0;
+
+                    if (amount > maxVal) {
+
+                        maxVal = amount;
+
+                        maxCat = item.getAttribute('data-category');
+
+                    }
+
+                });
+
+
+                // Update top category display
+
+                topCategoryDisplay.innerText = items.length > 0 ? maxCat : "None";
+
+            } else {
+
+                topCategoryDisplay.innerText = "None";
+
+            }
+
+        }
+
+
+        // Listen for dropdown changes
+
         select.addEventListener('change', updateList);
-        select.value = '{{ result.current_month }}';
+
+
+        // Default selection: This Month
+
+        select.value = {{ result.current_month | tojson }};
+
         updateList();
+
     });
+
 </script>
+
 {% endblock %}
