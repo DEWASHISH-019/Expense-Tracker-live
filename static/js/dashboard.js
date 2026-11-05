@@ -69,7 +69,7 @@ function renderCategoryChart(data, type = 'total') {
             labels: labels,
             datasets: [{
                 data: values, backgroundColor: modernPalette.slice(0, labels.length),
-                borderWidth: 3, borderColor: '#ffffff', hoverOffset: 8, borderRadius: 5
+                borderWidth: 0, hoverOffset: 8, borderRadius: 5
             }]
         },
         options: {
@@ -145,8 +145,10 @@ function renderMonthlyChart(data, chartType = 'bar') {
             },
             scales: {
                 x: { grid: { display: false, drawBorder: false }, ticks: { color: '#6b7280', font: { size: 12, weight: '600' } } },
-                y: {
-                    beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false, borderDash: [5, 5] }, border: { display: false },
+            y: {
+                beginAtZero: true, 
+                grid: { color: 'rgba(107, 114, 128, 0.2)', drawBorder: false, borderDash: [5, 5] }, 
+                border: { display: false },
                     ticks: {
                         color: '#9ca3af', font: { size: 11 },
                         callback: function(val) {
