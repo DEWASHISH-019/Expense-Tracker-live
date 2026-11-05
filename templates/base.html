@@ -129,7 +129,30 @@
             color: #ffffff !important;
             border-color: #2563eb !important;
         }
+                /* 10. Expenses Page: Category Pills (Light Grey) */
+        html[data-bs-theme="dark"] .category-pill {
+            background-color: #e2e8f0 !important; /* Light Grey */
+            color: #1e1e1e !important;            /* Dark text for contrast */
+            border-color: #cbd5e1 !important;     /* Soft border */
+        }
         
+        html[data-bs-theme="dark"] .category-pill:hover,
+        html[data-bs-theme="dark"] .category-pill.active {
+            background-color: #2563eb !important; /* Keeps your signature active blue */
+            color: #ffffff !important;            /* White text when active */
+            border-color: #2563eb !important;
+        }
+
+        /* 11. Expenses Page: Transparent Table Backgrounds */
+        html[data-bs-theme="dark"] .table-custom,
+        html[data-bs-theme="dark"] .table-custom tr,
+        html[data-bs-theme="dark"] .table-custom th,
+        html[data-bs-theme="dark"] .table-custom td {
+            background-color: transparent !important; /* Lets the dark #1e1e1e card show through */
+            color: #e2e8f0 !important;
+            border-bottom-color: #333 !important;
+        }
+    
     </style>
 
 </head>
