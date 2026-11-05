@@ -113,11 +113,14 @@
             background-color: #1e1e1e !important;
             border-color: #333 !important;
         }  
-        /* 8. Force Custom Auth Cards to Dark Mode (Perfect Size, Hidden Border) */
+        /* 8. Lock Auth Card Size and Force Dark Mode Colors */
+        .auth-card {
+            border: 1px solid transparent !important; /* Gives light mode an invisible 1px border so the size matches dark mode perfectly */
+        }
+
         html[data-bs-theme="dark"] .auth-card {
             background-color: #1e1e1e !important;
             border-color: #1e1e1e !important;
-            box-shadow: none !important;
         }
     </style>
 
