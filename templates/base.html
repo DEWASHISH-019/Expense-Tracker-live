@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Dark Mode Direct Overrides (Colors Restored) -->
     <style>
-        /* 1. The Magic Bullet: Redefine Bootstrap's Core Color Variables */
+        /* 1. Core Variables & Text Colors */
         html[data-bs-theme="dark"] {
             --bs-body-bg: #121212 !important;
             --bs-body-color: #e2e8f0 !important;
@@ -25,44 +25,7 @@
             --bs-card-bg: #1e1e1e !important;
         }
 
-        /* 2. Backup Brute-Force for Custom Blocks & Graphs */
-        html[data-bs-theme="dark"] .bg-white,
-        html[data-bs-theme="dark"] .card,
-        html[data-bs-theme="dark"] .stat-card,
-        html[data-bs-theme="dark"] .shadow-sm,
-        html[data-bs-theme="dark"] div[class*="shadow"],
-        html[data-bs-theme="dark"] .chart-container,
-        html[data-bs-theme="dark"] div[style*="background-color: white"],
-        html[data-bs-theme="dark"] div[style*="background-color: #fff"] {
-            background-color: #1e1e1e !important;
-            border-color: #1e1e1e !important;
-        }
-
-        /* 3. Category Filter Buttons */
-        html[data-bs-theme="dark"] .quick-tag-btn {
-            background-color: #000000 !important;
-            color: #ffffff !important;
-            border-color: #333 !important;
-        }
-        html[data-bs-theme="dark"] .quick-tag-btn:hover {
-            background-color: #222 !important;
-        }
-
-        /* 4. Forms, Dropdowns, & Print Button */
-        html[data-bs-theme="dark"] .form-control,
-        html[data-bs-theme="dark"] .form-select,
-        html[data-bs-theme="dark"] .btn-light {
-            background-color: #2a2a2a !important;
-            color: #ffffff !important;
-            border-color: #444 !important;
-        }
-
-        /* 5. Safe Text Colors (Restores AI Insights Green & Grey!) */
-        html[data-bs-theme="dark"] .text-dark {
-            color: #ffffff !important;
-        }
-        
-        /* Forces standard headings to white, UNLESS they have specific color classes */
+        html[data-bs-theme="dark"] .text-dark,
         html[data-bs-theme="dark"] h1:not(.text-secondary), 
         html[data-bs-theme="dark"] h2:not(.text-secondary), 
         html[data-bs-theme="dark"] h3:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger):not(.text-success), 
@@ -73,91 +36,58 @@
             color: #ffffff !important;
         }
 
-        /* Explicitly protects custom inline green and bootstrap green */
-        html[data-bs-theme="dark"] [style*="#059669"],
-        html[data-bs-theme="dark"] .text-success {
-            color: #059669 !important; 
+        html[data-bs-theme="dark"] [style*="#059669"], html[data-bs-theme="dark"] .text-success { color: #059669 !important; }
+        html[data-bs-theme="dark"] .text-muted, html[data-bs-theme="dark"] .text-secondary { color: #94a3b8 !important; }
+
+        /* 2. Universal Dark Containers (Cards, Docks, Custom Blocks) */
+        .auth-card { border: 1px solid transparent !important; } /* Light mode sizing fix */
+        
+        html[data-bs-theme="dark"] .bg-white, html[data-bs-theme="dark"] .card, 
+        html[data-bs-theme="dark"] .stat-card, html[data-bs-theme="dark"] .shadow-sm, 
+        html[data-bs-theme="dark"] div[class*="shadow"], html[data-bs-theme="dark"] .chart-container, 
+        html[data-bs-theme="dark"] div[style*="background-color: white"], 
+        html[data-bs-theme="dark"] div[style*="background-color: #fff"],
+        html[data-bs-theme="dark"] .auth-card, html[data-bs-theme="dark"] .filter-dock {
+            background-color: #1e1e1e !important;
+            border-color: #1e1e1e !important; /* Seamless invisible borders */
         }
 
-        /* Restores the slate grey for "Last Month" */
-        html[data-bs-theme="dark"] .text-muted,
-        html[data-bs-theme="dark"] .text-secondary {
-            color: #94a3b8 !important; 
-        }
-        /* 6. Force Dynamic Dark Mode for All Chart & Graph Containers */
-        html[data-bs-theme="dark"] canvas,
-        html[data-bs-theme="dark"] .chartjs-render-monitor,
-        html[data-bs-theme="dark"] div[class*="chart"] {
-            background-color: transparent !important;
-        }
-        
-        html[data-bs-theme="dark"] .card,
-        html[data-bs-theme="dark"] .shadow-sm {
-            background-color: #1e1e1e !important;
-            border-color: #333 !important;
-        }
-        /* Complete Dark Mode Fix for Chart.js */
-        html[data-bs-theme="dark"] .card canvas {
-            color: #94a3b8 !important; /* Soft grey text for axis labels */
-        }
-        
-        /* Forces Chart.js grid lines and scales to use a subtle dark-mode grey */
-        html[data-bs-theme="dark"] .card .chart-container,
-        html[data-bs-theme="dark"] canvas {
-            --bs-body-bg: #1e1e1e;
-        }
-        /* 7. Force Login & Register Cards to Dark Grey */
-        html[data-bs-theme="dark"] body .bg-white,
-        html[data-bs-theme="dark"] body main .bg-white,
-        html[data-bs-theme="dark"] .container .bg-white {
-            background-color: #1e1e1e !important;
-            border-color: #333 !important;
-        }  
-        /* 8. Lock Auth Card Size and Force Dark Mode Colors */
-        .auth-card {
-            border: 1px solid transparent !important; /* Gives light mode an invisible 1px border so the size matches dark mode perfectly */
-        }
-
-        html[data-bs-theme="dark"] .auth-card {
-            background-color: #1e1e1e !important;
-            border-color: #1e1e1e !important;
-        }
-        /* 9. Lock Add Expense Button to Blue in ALL modes */
-        .btn-add-expense,
-        html[data-bs-theme="dark"] .btn-add-expense {
-            background-color: #2563eb !important;
-            color: #ffffff !important;
-            border-color: #2563eb !important;
-        }
-        /* 10. Expenses Page: Category Pills (Dark Grey, White Text) */
-        html[data-bs-theme="dark"] .category-pill {
-            background-color: #2a2a2a !important; 
+        /* 3. Inputs, Dropdowns, & Category Pills */
+        html[data-bs-theme="dark"] .form-control, html[data-bs-theme="dark"] .form-select, 
+        html[data-bs-theme="dark"] .btn-light, html[data-bs-theme="dark"] .category-pill {
+            background-color: #2a2a2a !important;
             color: #ffffff !important;
             border-color: #444 !important;
         }
         
-        html[data-bs-theme="dark"] .category-pill:hover,
-        html[data-bs-theme="dark"] .category-pill.active {
+        html[data-bs-theme="dark"] .category-pill:hover, html[data-bs-theme="dark"] .category-pill.active {
             background-color: #2563eb !important; 
-            color: #ffffff !important;
             border-color: #2563eb !important;
         }
 
-        /* 11. Expenses Page: Transparent Table Backgrounds */
-        html[data-bs-theme="dark"] .table-custom,
-        html[data-bs-theme="dark"] .table-custom tr,
-        html[data-bs-theme="dark"] .table-custom th,
-        html[data-bs-theme="dark"] .table-custom td {
-            background-color: transparent !important; /* Lets the dark #1e1e1e card show through */
-            color: #e2e8f0 !important;
-            border-bottom-color: #333 !important;
+        /* 4. Unique Buttons (Quick Tags & Add Expense) */
+        html[data-bs-theme="dark"] .quick-tag-btn { background-color: #000000 !important; color: #ffffff !important; border-color: #333 !important; }
+        html[data-bs-theme="dark"] .quick-tag-btn:hover { background-color: #222 !important; }
+
+        .btn-add-expense, html[data-bs-theme="dark"] .btn-add-expense {
+            background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important;
         }
-                /* 12. Expenses Page: Filter Dock Background */
-        html[data-bs-theme="dark"] .filter-dock {
-            background-color: #1e1e1e !important;
-            border-color: #333 !important;
+
+        /* 5. Tables & Charts (Transparency & Grids) */
+        html[data-bs-theme="dark"] canvas, html[data-bs-theme="dark"] .chartjs-render-monitor, 
+        html[data-bs-theme="dark"] div[class*="chart"],
+        html[data-bs-theme="dark"] .table-custom, html[data-bs-theme="dark"] .table-custom tr, 
+        html[data-bs-theme="dark"] .table-custom th, html[data-bs-theme="dark"] .table-custom td {
+            background-color: transparent !important;
         }
-    
+
+        html[data-bs-theme="dark"] .table-custom, html[data-bs-theme="dark"] .table-custom tr, 
+        html[data-bs-theme="dark"] .table-custom th, html[data-bs-theme="dark"] .table-custom td {
+            color: #e2e8f0 !important; border-bottom-color: #333 !important;
+        }
+
+        html[data-bs-theme="dark"] .card canvas { color: #94a3b8 !important; }
+        html[data-bs-theme="dark"] .card .chart-container, html[data-bs-theme="dark"] canvas { --bs-body-bg: #1e1e1e; }
     </style>
 
 </head>
