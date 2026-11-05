@@ -40,7 +40,7 @@
         html[data-bs-theme="dark"] .text-muted, html[data-bs-theme="dark"] .text-secondary { color: #94a3b8 !important; }
 
         /* 2. Universal Dark Containers (Cards, Docks, Custom Blocks) */
-        .auth-card { border: 1px solid transparent !important; } /* Light mode sizing fix */
+        .auth-card { border: 1px solid transparent !important; } 
         
         html[data-bs-theme="dark"] .bg-white, html[data-bs-theme="dark"] .card, 
         html[data-bs-theme="dark"] .stat-card, html[data-bs-theme="dark"] .chart-card, 
@@ -48,9 +48,11 @@
         html[data-bs-theme="dark"] .chart-container, html[data-bs-theme="dark"] div[style*="background-color: white"], 
         html[data-bs-theme="dark"] div[style*="background-color: #fff"],
         html[data-bs-theme="dark"] .auth-card, html[data-bs-theme="dark"] .filter-dock {
-            background-color: #1e1e1e !important;
-            border-color: #1e1e1e !important; /* Seamless invisible borders */
+            background-color: #1e1e1e !important; /* The exact lighter grey from your top cards */
+            border-color: #1e1e1e !important;      /* Kills the white border by matching the background */
+            box-shadow: none !important;           /* Prevents any glowing edges */
         }
+
 
         /* 3. Inputs, Dropdowns, & Category Pills */
         html[data-bs-theme="dark"] .form-control, html[data-bs-theme="dark"] .form-select, 
