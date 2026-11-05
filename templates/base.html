@@ -55,21 +55,27 @@
 
 
         /* 3. Inputs, Dropdowns, & Category Pills */
-        html[data-bs-theme="dark"] .form-control, 
-        html[data-bs-theme="dark"] .form-select, 
-        html[data-bs-theme="dark"] .category-pill { /* Removed .btn-light from this group! */
+        html[data-bs-theme="dark"] .form-control, html[data-bs-theme="dark"] .form-select, 
+        html[data-bs-theme="dark"] .btn-light, html[data-bs-theme="dark"] .category-pill {
             background-color: #2a2a2a !important;
             color: #ffffff !important;
             border-color: #444 !important;
         }
         
-        html[data-bs-theme="dark"] .category-pill:hover, 
-        html[data-bs-theme="dark"] .category-pill.active {
+        html[data-bs-theme="dark"] .category-pill:hover, html[data-bs-theme="dark"] .category-pill.active {
             background-color: #2563eb !important; 
             border-color: #2563eb !important;
         }
+        /* Mobile Navbar Tap/Hover Highlight Fix */
+        html[data-bs-theme="dark"] .navbar-nav .nav-link:hover,
+        html[data-bs-theme="dark"] .navbar-nav .nav-link:focus,
+        html[data-bs-theme="dark"] .navbar-nav .nav-link.active {
+            background-color: #2a2a2a !important; /* Soft dark grey instead of blinding white */
+            color: #ffffff !important;            /* Keeps the text crisp and visible */
+        }
+        
 
-        /* 4. Unique Buttons (Quick Tags, Add Expense, & Print) */
+        /* 4. Unique Buttons (Quick Tags & Add Expense) */
         html[data-bs-theme="dark"] .quick-tag-btn { background-color: #000000 !important; color: #ffffff !important; border-color: #333 !important; }
         html[data-bs-theme="dark"] .quick-tag-btn:hover { background-color: #222 !important; }
 
