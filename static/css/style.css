@@ -794,26 +794,49 @@ body {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
 }
-/* --- Dark Mode Overrides --- */
+/* --- Dark Mode Overrides (Updated) --- */
+/* 1. Main Background */
 [data-bs-theme="dark"] body {
     background-color: #121212 !important;
     color: #e2e8f0 !important;
 }
 
+/* 2. Fix Navbar Links (Invisible Text) */
+[data-bs-theme="dark"] .nav-link,
+[data-bs-theme="dark"] .navbar-nav a {
+    color: #f8f9fa !important;
+    opacity: 1 !important;
+}
+[data-bs-theme="dark"] .navbar-toggler-icon {
+    filter: invert(1); /* Turns the mobile hamburger menu icon white */
+}
+
+/* 3. Fix Cards, Filter Blocks, and Lists */
 [data-bs-theme="dark"] .card,
 [data-bs-theme="dark"] .bg-white,
-[data-bs-theme="dark"] .navbar {
+[data-bs-theme="dark"] .list-group-item {
     background-color: #1e1e1e !important;
+    color: #f8f9fa !important;
     border-color: #333 !important;
 }
 
-[data-bs-theme="dark"] .text-dark,
-[data-bs-theme="dark"] .navbar-brand {
+/* 4. Fix Inputs (Search bars & dropdowns) */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #2a2a2a !important;
     color: #f8f9fa !important;
+    border-color: #444 !important;
+}
+[data-bs-theme="dark"] .form-control::placeholder {
+    color: #a0aec0 !important;
 }
 
-[data-bs-theme="dark"] .card-title,
-[data-bs-theme="dark"] .text-muted {
+/* 5. Fix Text Colors */
+[data-bs-theme="dark"] .text-dark {
+    color: #f8f9fa !important;
+}
+[data-bs-theme="dark"] .text-muted,
+[data-bs-theme="dark"] .text-secondary {
     color: #a0aec0 !important;
 }
 
