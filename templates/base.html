@@ -25,30 +25,38 @@
             --bs-card-bg: #1e1e1e !important;
         }
 
-        /* Protect all specific colors from the white text override */
+        /* 1a. Base Headings (Forced to White) */
         html[data-bs-theme="dark"] .text-dark,
-        html[data-bs-theme="dark"] h1:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
-        html[data-bs-theme="dark"] h2:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
-        html[data-bs-theme="dark"] h3:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
-        html[data-bs-theme="dark"] h4:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
-        html[data-bs-theme="dark"] h5:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
-        html[data-bs-theme="dark"] h6:not(.text-secondary):not([style*="#059669"]):not(.text-primary),
-        html[data-bs-theme="dark"] .fw-bold:not(.text-secondary):not([style*="#059669"]):not(.text-primary) {
+        html[data-bs-theme="dark"] h1, html[data-bs-theme="dark"] h2, 
+        html[data-bs-theme="dark"] h3, html[data-bs-theme="dark"] h4, 
+        html[data-bs-theme="dark"] h5, html[data-bs-theme="dark"] h6,
+        html[data-bs-theme="dark"] .fw-bold {
             color: #ffffff !important;
         }
 
-        /* Lock in specific text colors */
-        html[data-bs-theme="dark"] [style*="#059669"], html[data-bs-theme="dark"] .text-success { color: #059669 !important; }
-        html[data-bs-theme="dark"] .text-primary { color: #2563eb !important; }
-        html[data-bs-theme="dark"] .text-muted, html[data-bs-theme="dark"] .text-secondary { color: #94a3b8 !important; }
+        /* 1b. Color Protections (High Specificity to guarantee they win) */
+        html[data-bs-theme="dark"] body h4[style*="059669"], 
+        html[data-bs-theme="dark"] body [style*="059669"], 
+        html[data-bs-theme="dark"] body .text-success { color: #059669 !important; }
+        
+        html[data-bs-theme="dark"] body .text-primary { color: #2563eb !important; }
+        
+        html[data-bs-theme="dark"] body .text-muted, 
+        html[data-bs-theme="dark"] body .text-secondary { color: #94a3b8 !important; }
 
-        /* Fix glaring white borders & list backgrounds in previews */
-        html[data-bs-theme="dark"] .border, html[data-bs-theme="dark"] .border-bottom, 
-        html[data-bs-theme="dark"] .border-top, html[data-bs-theme="dark"] hr {
+        /* 1c. Mock Dashboard / List Borders & Backgrounds */
+        html[data-bs-theme="dark"] hr, 
+        html[data-bs-theme="dark"] .border, 
+        html[data-bs-theme="dark"] .border-bottom, 
+        html[data-bs-theme="dark"] .border-top {
             border-color: #333 !important;
+            border-width: 1px !important; /* Kills the thick white lines */
         }
         
-        html[data-bs-theme="dark"] .bg-light, html[data-bs-theme="dark"] .list-group-item {
+        /* Force the mock preview list containers to be light grey */
+        html[data-bs-theme="dark"] .bg-light, 
+        html[data-bs-theme="dark"] .list-group-item,
+        html[data-bs-theme="dark"] div[class*="border rounded"] {
             background-color: #1e1e1e !important;
             border-color: #333 !important;
         }
