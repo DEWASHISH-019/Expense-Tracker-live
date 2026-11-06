@@ -27,11 +27,11 @@
         html[data-bs-theme="dark"] .text-dark,
         html[data-bs-theme="dark"] h1, 
         html[data-bs-theme="dark"] h2, 
-        html[data-bs-theme="dark"] h3, 
+        html[data-bs-theme="dark"] h3:not(.text-primary):not(.text-danger), 
         html[data-bs-theme="dark"] h4:not([style*="color"]):not(.text-success), 
         html[data-bs-theme="dark"] h5:not(.text-secondary):not(.text-primary), 
         html[data-bs-theme="dark"] h6,
-        html[data-bs-theme="dark"] .fw-bold:not([style*="color"]):not(.text-success):not(.text-secondary):not(.text-primary) {
+        html[data-bs-theme="dark"] .fw-bold:not([style*="color"]):not(.text-success):not(.text-secondary):not(.text-primary):not(.text-danger) {
             color: #ffffff !important;
         }
 
