@@ -17,7 +17,6 @@
     <!-- Dark Mode Direct Overrides (Colors Restored) -->
     <style>
         /* 1. Core Variables, Text Colors & Global UI Resets */
-         /* 1. Core Variables, Text Colors & Global UI Resets */
         html[data-bs-theme="dark"] {
             --bs-body-bg: #121212 !important;
             --bs-body-color: #e2e8f0 !important;
@@ -35,14 +34,31 @@
             color: #ffffff !important;
         }
 
-        /* 1b. Global Color Protections */
-        html[data-bs-theme="dark"] body .text-success { color: #059669 !important; }
-        html[data-bs-theme="dark"] body .text-primary { color: #2563eb !important; }
-        html[data-bs-theme="dark"] body .text-muted, 
-        html[data-bs-theme="dark"] body .text-secondary { color: #94a3b8 !important; }
+        /* 1b. Bulletproof Color Protections (Forces colors to beat the whiteout rule) */
+        html[data-bs-theme="dark"] [style*="#059669"], 
+        html[data-bs-theme="dark"] h4[style*="#059669"], 
+        html[data-bs-theme="dark"] .text-success,
+        html[data-bs-theme="dark"] h4.text-success,
+        html[data-bs-theme="dark"] .fw-bold.text-success,
+        html[data-bs-theme="dark"] .fw-bold[style*="#059669"] { 
+            color: #059669 !important; /* Forces This Month to Green */
+        }
+        
+        html[data-bs-theme="dark"] .text-primary,
+        html[data-bs-theme="dark"] h5.text-primary,
+        html[data-bs-theme="dark"] .fw-bold.text-primary { 
+            color: #2563eb !important; /* Forces Transactions to Blue */
+        }
+        
+        html[data-bs-theme="dark"] .text-muted, 
+        html[data-bs-theme="dark"] .text-secondary,
+        html[data-bs-theme="dark"] h5.text-secondary,
+        html[data-bs-theme="dark"] .fw-bold.text-muted,
+        html[data-bs-theme="dark"] .fw-bold.text-secondary { 
+            color: #94a3b8 !important; /* Forces Last Month to Grey */
+        }
 
-        /* 1c. Mock Dashboard Card Fixes (Bulletproof Structural Targeting) */
-        /* Forces the entire card to the correct light grey, overpowering inline styles */
+        /* 1c. Mock Dashboard Card Fixes */
         html[data-bs-theme="dark"] .hero-open .card,
         html[data-bs-theme="dark"] .hero-open .card-header,
         html[data-bs-theme="dark"] .hero-open .card-footer {
@@ -51,15 +67,9 @@
             border-color: #333 !important;
         }
 
-        /* Overrides the specific inline table lines with a thin dark grey */
         html[data-bs-theme="dark"] .hero-open thead {
             border-top: 1px solid #333 !important;
             border-bottom: 1px solid #333 !important;
-        }
-
-        /* structurally targets the "This Month" amount to guarantee it turns green */
-        html[data-bs-theme="dark"] .hero-open .col-6:nth-child(2) h4 {
-            color: #059669 !important;
         }
 
         /* 2. Universal Dark Containers (Cards, Docks, Custom Blocks) */
