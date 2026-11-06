@@ -109,6 +109,36 @@
         html[data-bs-theme="dark"] .card .chart-container, html[data-bs-theme="dark"] canvas { --bs-body-bg: #1e1e1e; }
 
         
+        /* 6. Add Expense Page Specifics */
+        /* Category Pills & Amount Preset Buttons (Deep Dark) */
+        html[data-bs-theme="dark"] .expense-category-btn,
+        html[data-bs-theme="dark"] .expense-amount-btn {
+            background-color: #2a2a2a !important;
+            color: #ffffff !important;
+            border-color: #444 !important;
+        }
+
+        html[data-bs-theme="dark"] .expense-category-btn:hover,
+        html[data-bs-theme="dark"] .expense-category-btn.active,
+        html[data-bs-theme="dark"] .expense-amount-btn:hover {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #ffffff !important;
+        }
+
+        /* Preset Option Cards (Light Grey) */
+        html[data-bs-theme="dark"] .expense-preset-card {
+            background-color: #1e1e1e !important;
+            border-color: #1e1e1e !important;
+        }
+        
+        /* Ensure the title text inside preset cards flips to white */
+        html[data-bs-theme="dark"] .expense-preset-card h5,
+        html[data-bs-theme="dark"] .expense-preset-card h6,
+        html[data-bs-theme="dark"] .expense-preset-card .fw-bold {
+            color: #ffffff !important;
+        }
+        
     </style>
 
 </head>
