@@ -17,6 +17,7 @@
     <!-- Dark Mode Direct Overrides (Colors Restored) -->
     <style>
         /* 1. Core Variables, Text Colors & Global UI Resets */
+         /* 1. Core Variables, Text Colors & Global UI Resets */
         html[data-bs-theme="dark"] {
             --bs-body-bg: #121212 !important;
             --bs-body-color: #e2e8f0 !important;
@@ -34,31 +35,31 @@
             color: #ffffff !important;
         }
 
-        /* 1b. Color Protections (High Specificity) */
-        html[data-bs-theme="dark"] body h4[style*="059669"], 
-        html[data-bs-theme="dark"] body [style*="059669"], 
+        /* 1b. Global Color Protections */
         html[data-bs-theme="dark"] body .text-success { color: #059669 !important; }
-        
         html[data-bs-theme="dark"] body .text-primary { color: #2563eb !important; }
-        
         html[data-bs-theme="dark"] body .text-muted, 
         html[data-bs-theme="dark"] body .text-secondary { color: #94a3b8 !important; }
 
-        /* 1c. Mock Dashboard Card & Table Fixes */
-        html[data-bs-theme="dark"] hr, 
-        html[data-bs-theme="dark"] .border, 
-        html[data-bs-theme="dark"] .border-bottom, 
-        html[data-bs-theme="dark"] .border-top,
-        html[data-bs-theme="dark"] thead[style*="#f1f5f9"] { /* Catches the inline table borders */
-            border-color: #333 !important;
-            border-width: 1px !important; 
-        }
-        
-        /* Forces the mock card, header, and footer to the correct #1e1e1e grey */
-        html[data-bs-theme="dark"] div[style*="background: white"],
-        html[data-bs-theme="dark"] .bg-white {
+        /* 1c. Mock Dashboard Card Fixes (Bulletproof Structural Targeting) */
+        /* Forces the entire card to the correct light grey, overpowering inline styles */
+        html[data-bs-theme="dark"] .hero-open .card,
+        html[data-bs-theme="dark"] .hero-open .card-header,
+        html[data-bs-theme="dark"] .hero-open .card-footer {
             background-color: #1e1e1e !important;
+            background: #1e1e1e !important; 
             border-color: #333 !important;
+        }
+
+        /* Overrides the specific inline table lines with a thin dark grey */
+        html[data-bs-theme="dark"] .hero-open thead {
+            border-top: 1px solid #333 !important;
+            border-bottom: 1px solid #333 !important;
+        }
+
+        /* structurally targets the "This Month" amount to guarantee it turns green */
+        html[data-bs-theme="dark"] .hero-open .col-6:nth-child(2) h4 {
+            color: #059669 !important;
         }
 
         /* 2. Universal Dark Containers (Cards, Docks, Custom Blocks) */
