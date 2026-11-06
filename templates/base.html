@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Dark Mode Direct Overrides (Colors Restored) -->
     <style>
-        /* 1. Core Variables & Text Colors */
+        /* 1. Core Variables, Text Colors & Global UI Resets */
         html[data-bs-theme="dark"] {
             --bs-body-bg: #121212 !important;
             --bs-body-color: #e2e8f0 !important;
@@ -25,19 +25,33 @@
             --bs-card-bg: #1e1e1e !important;
         }
 
+        /* Protect all specific colors from the white text override */
         html[data-bs-theme="dark"] .text-dark,
-        html[data-bs-theme="dark"] h1:not(.text-secondary), 
-        html[data-bs-theme="dark"] h2:not(.text-secondary), 
-        html[data-bs-theme="dark"] h3:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger):not(.text-success), 
-        html[data-bs-theme="dark"] h4:not(.text-secondary), 
-        html[data-bs-theme="dark"] h5:not(.text-secondary), 
-        html[data-bs-theme="dark"] h6:not(.text-secondary),
-        html[data-bs-theme="dark"] .fw-bold:not(.text-secondary):not([style*="#059669"]):not(.text-primary):not(.text-danger):not(.text-success) {
+        html[data-bs-theme="dark"] h1:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
+        html[data-bs-theme="dark"] h2:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
+        html[data-bs-theme="dark"] h3:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
+        html[data-bs-theme="dark"] h4:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
+        html[data-bs-theme="dark"] h5:not(.text-secondary):not([style*="#059669"]):not(.text-primary), 
+        html[data-bs-theme="dark"] h6:not(.text-secondary):not([style*="#059669"]):not(.text-primary),
+        html[data-bs-theme="dark"] .fw-bold:not(.text-secondary):not([style*="#059669"]):not(.text-primary) {
             color: #ffffff !important;
         }
 
+        /* Lock in specific text colors */
         html[data-bs-theme="dark"] [style*="#059669"], html[data-bs-theme="dark"] .text-success { color: #059669 !important; }
+        html[data-bs-theme="dark"] .text-primary { color: #2563eb !important; }
         html[data-bs-theme="dark"] .text-muted, html[data-bs-theme="dark"] .text-secondary { color: #94a3b8 !important; }
+
+        /* Fix glaring white borders & list backgrounds in previews */
+        html[data-bs-theme="dark"] .border, html[data-bs-theme="dark"] .border-bottom, 
+        html[data-bs-theme="dark"] .border-top, html[data-bs-theme="dark"] hr {
+            border-color: #333 !important;
+        }
+        
+        html[data-bs-theme="dark"] .bg-light, html[data-bs-theme="dark"] .list-group-item {
+            background-color: #1e1e1e !important;
+            border-color: #333 !important;
+        }
 
         /* 2. Universal Dark Containers (Cards, Docks, Custom Blocks) */
         .auth-card { border: 1px solid transparent !important; } 
