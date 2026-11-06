@@ -34,7 +34,7 @@
             color: #ffffff !important;
         }
 
-        /* 1b. Color Protections (High Specificity to guarantee they win) */
+        /* 1b. Color Protections (High Specificity) */
         html[data-bs-theme="dark"] body h4[style*="059669"], 
         html[data-bs-theme="dark"] body [style*="059669"], 
         html[data-bs-theme="dark"] body .text-success { color: #059669 !important; }
@@ -44,19 +44,19 @@
         html[data-bs-theme="dark"] body .text-muted, 
         html[data-bs-theme="dark"] body .text-secondary { color: #94a3b8 !important; }
 
-        /* 1c. Mock Dashboard / List Borders & Backgrounds */
+        /* 1c. Mock Dashboard Card & Table Fixes */
         html[data-bs-theme="dark"] hr, 
         html[data-bs-theme="dark"] .border, 
         html[data-bs-theme="dark"] .border-bottom, 
-        html[data-bs-theme="dark"] .border-top {
+        html[data-bs-theme="dark"] .border-top,
+        html[data-bs-theme="dark"] thead[style*="#f1f5f9"] { /* Catches the inline table borders */
             border-color: #333 !important;
-            border-width: 1px !important; /* Kills the thick white lines */
+            border-width: 1px !important; 
         }
         
-        /* Force the mock preview list containers to be light grey */
-        html[data-bs-theme="dark"] .bg-light, 
-        html[data-bs-theme="dark"] .list-group-item,
-        html[data-bs-theme="dark"] div[class*="border rounded"] {
+        /* Forces the mock card, header, and footer to the correct #1e1e1e grey */
+        html[data-bs-theme="dark"] div[style*="background: white"],
+        html[data-bs-theme="dark"] .bg-white {
             background-color: #1e1e1e !important;
             border-color: #333 !important;
         }
