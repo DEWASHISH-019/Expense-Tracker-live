@@ -109,6 +109,40 @@
         html[data-bs-theme="dark"] .card .chart-container, html[data-bs-theme="dark"] canvas { --bs-body-bg: #1e1e1e; }
 
         
+        /* 6. Add Expense Page Elements */
+        
+        /* Category Buttons & Amount Buttons (Deep Dark) */
+        html[data-bs-theme="dark"] .cat-picker-btn,
+        html[data-bs-theme="dark"] .amount-btn {
+            background-color: #2a2a2a !important;
+            color: #ffffff !important;
+            border-color: #444 !important;
+        }
+
+        html[data-bs-theme="dark"] .cat-picker-btn:hover,
+        html[data-bs-theme="dark"] .cat-picker-btn.active,
+        html[data-bs-theme="dark"] .amount-btn:hover {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #ffffff !important;
+        }
+
+        /* Preset Option Cards (Light Grey) */
+        html[data-bs-theme="dark"] .example-chip {
+            background-color: #1e1e1e !important;
+            border-color: #1e1e1e !important; /* Seamless border */
+        }
+        
+        /* Preset Card Text (White Title, Grey Subtitle) */
+        html[data-bs-theme="dark"] .example-chip-title,
+        html[data-bs-theme="dark"] .example-chip-amount {
+            color: #ffffff !important;
+        }
+        
+        html[data-bs-theme="dark"] .example-chip-note {
+            color: #94a3b8 !important;
+        }
+        
     </style>
 
 </head>
