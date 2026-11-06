@@ -75,13 +75,25 @@
         }
         
 
-        /* 4. Unique Buttons (Quick Tags & Add Expense) */
+        /* 4. Unique Buttons (Quick Tags, Add Expense, & Print) */
         html[data-bs-theme="dark"] .quick-tag-btn { background-color: #000000 !important; color: #ffffff !important; border-color: #333 !important; }
         html[data-bs-theme="dark"] .quick-tag-btn:hover { background-color: #222 !important; }
 
-        .btn-add-expense, html[data-bs-theme="dark"] .btn-add-expense {
-            background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important;
+        /* Locks both the Add Expense and Save Expense buttons to Blue */
+        .btn-add-expense, html[data-bs-theme="dark"] .btn-add-expense,
+        html[data-bs-theme="dark"] #expenseForm .btn-primary {
+            background-color: #2563eb !important; 
+            color: #ffffff !important; 
+            border-color: #2563eb !important;
         }
+
+        /* Print Statement Button - Dedicated Rule */
+        html[data-bs-theme="dark"] .btn-light {
+            background-color: #2a2a2a !important; 
+            color: #ffffff !important;            
+            border: 2px solid #ffffff !important; 
+        }
+
 
         /* Print Statement Button - Dedicated Rule */
         html[data-bs-theme="dark"] .btn-light {
@@ -130,12 +142,17 @@
         /* Preset Option Cards (Light Grey) */
         html[data-bs-theme="dark"] .example-chip {
             background-color: #1e1e1e !important;
-            border-color: #1e1e1e !important; /* Seamless border */
+            border-color: #1e1e1e !important; 
         }
         
-        /* Preset Card Text (White Title, Grey Subtitle) */
-        html[data-bs-theme="dark"] .example-chip-title,
+        /* Preset Card Text */
+        html[data-bs-theme="dark"] .example-chip-title {
+            color: #ffffff !important;
+        }
+        
+        /* Forces the Amount Badge to Deep Dark with White Text */
         html[data-bs-theme="dark"] .example-chip-amount {
+            background-color: #2a2a2a !important; 
             color: #ffffff !important;
         }
         
