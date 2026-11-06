@@ -16,49 +16,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Dark Mode Direct Overrides (Colors Restored) -->
     <style>
-        /* 1. Core Variables, Text Colors & Global UI Resets */
+        /* 1. Core Variables & Global UI Resets */
         html[data-bs-theme="dark"] {
             --bs-body-bg: #121212 !important;
             --bs-body-color: #e2e8f0 !important;
-            --bs-white-rgb: 30, 30, 30 !important; 
-            --bs-light-rgb: 42, 42, 42 !important; 
             --bs-card-bg: #1e1e1e !important;
         }
 
-        /* 1a. Base Headings (Forced to White) */
+        /* 1a. Smart Whiteout (Ignores elements that have specific colors) */
         html[data-bs-theme="dark"] .text-dark,
-        html[data-bs-theme="dark"] h1, html[data-bs-theme="dark"] h2, 
-        html[data-bs-theme="dark"] h3, html[data-bs-theme="dark"] h4, 
-        html[data-bs-theme="dark"] h5, html[data-bs-theme="dark"] h6,
-        html[data-bs-theme="dark"] .fw-bold {
+        html[data-bs-theme="dark"] h1, 
+        html[data-bs-theme="dark"] h2, 
+        html[data-bs-theme="dark"] h3, 
+        html[data-bs-theme="dark"] h4:not([style*="color"]):not(.text-success), 
+        html[data-bs-theme="dark"] h5:not(.text-secondary):not(.text-primary), 
+        html[data-bs-theme="dark"] h6,
+        html[data-bs-theme="dark"] .fw-bold:not([style*="color"]):not(.text-success):not(.text-secondary):not(.text-primary) {
             color: #ffffff !important;
         }
 
-        /* 1b. Bulletproof Color Protections (Forces colors to beat the whiteout rule) */
-        html[data-bs-theme="dark"] [style*="#059669"], 
-        html[data-bs-theme="dark"] h4[style*="#059669"], 
-        html[data-bs-theme="dark"] .text-success,
-        html[data-bs-theme="dark"] h4.text-success,
-        html[data-bs-theme="dark"] .fw-bold.text-success,
-        html[data-bs-theme="dark"] .fw-bold[style*="#059669"] { 
-            color: #059669 !important; /* Forces This Month to Green */
-        }
+        /* 1b. Lock in the Green, Grey, and Blue for the Mock Dashboard */
+        html[data-bs-theme="dark"] .hero-open h4[style*="color"],
+        html[data-bs-theme="dark"] .hero-open h4.text-success { color: #059669 !important; }
         
-        html[data-bs-theme="dark"] .text-primary,
-        html[data-bs-theme="dark"] h5.text-primary,
-        html[data-bs-theme="dark"] .fw-bold.text-primary { 
-            color: #2563eb !important; /* Forces Transactions to Blue */
-        }
-        
-        html[data-bs-theme="dark"] .text-muted, 
-        html[data-bs-theme="dark"] .text-secondary,
-        html[data-bs-theme="dark"] h5.text-secondary,
-        html[data-bs-theme="dark"] .fw-bold.text-muted,
-        html[data-bs-theme="dark"] .fw-bold.text-secondary { 
-            color: #94a3b8 !important; /* Forces Last Month to Grey */
-        }
+        html[data-bs-theme="dark"] .hero-open h5.text-secondary { color: #94a3b8 !important; }
+        html[data-bs-theme="dark"] .hero-open h5.text-primary { color: #2563eb !important; }
+        html[data-bs-theme="dark"] .hero-open .text-muted { color: #94a3b8 !important; }
 
-        /* 1c. Mock Dashboard Card Fixes */
+        /* 1c. Mock Dashboard Card Background & Lines */
         html[data-bs-theme="dark"] .hero-open .card,
         html[data-bs-theme="dark"] .hero-open .card-header,
         html[data-bs-theme="dark"] .hero-open .card-footer {
@@ -70,14 +55,6 @@
         html[data-bs-theme="dark"] .hero-open thead {
             border-top: 1px solid #333 !important;
             border-bottom: 1px solid #333 !important;
-        }
-        /* 1d. Ultimate Mock Dashboard Override (Points directly to the columns) */
-        html[data-bs-theme="dark"] .hero-open div.col-6:nth-child(2) h4.fw-bold {
-            color: #059669 !important; /* Forces 2nd column (This Month) to Green */
-        }
-        
-        html[data-bs-theme="dark"] .hero-open div.col-6:nth-child(3) h5.fw-bold {
-            color: #94a3b8 !important; /* Forces 3rd column (Last Month) to Grey */
         }
         
         /* 2. Universal Dark Containers (Cards, Docks, Custom Blocks) */
