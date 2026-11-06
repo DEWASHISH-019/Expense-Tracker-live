@@ -71,7 +71,15 @@
             border-top: 1px solid #333 !important;
             border-bottom: 1px solid #333 !important;
         }
-
+        /* 1d. Ultimate Mock Dashboard Override (Points directly to the columns) */
+        html[data-bs-theme="dark"] .hero-open div.col-6:nth-child(2) h4.fw-bold {
+            color: #059669 !important; /* Forces 2nd column (This Month) to Green */
+        }
+        
+        html[data-bs-theme="dark"] .hero-open div.col-6:nth-child(3) h5.fw-bold {
+            color: #94a3b8 !important; /* Forces 3rd column (Last Month) to Grey */
+        }
+        
         /* 2. Universal Dark Containers (Cards, Docks, Custom Blocks) */
         .auth-card { border: 1px solid transparent !important; } 
         
