@@ -35,13 +35,29 @@
             color: #ffffff !important;
         }
 
-        /* 1b. Lock in the Green, Grey, and Blue for the Mock Dashboard */
-        html[data-bs-theme="dark"] .hero-open h4[style*="color"],
-        html[data-bs-theme="dark"] .hero-open h4.text-success { color: #059669 !important; }
+        /* 1b. Universal Bootstrap Color Protections */
+        /* Protects Green */
+        html[data-bs-theme="dark"] body .text-success,
+        html[data-bs-theme="dark"] body h4.text-success,
+        html[data-bs-theme="dark"] body .fw-bold.text-success { color: #059669 !important; }
         
-        html[data-bs-theme="dark"] .hero-open h5.text-secondary { color: #94a3b8 !important; }
-        html[data-bs-theme="dark"] .hero-open h5.text-primary { color: #2563eb !important; }
-        html[data-bs-theme="dark"] .hero-open .text-muted { color: #94a3b8 !important; }
+        /* Protects Blue */
+        html[data-bs-theme="dark"] body .text-primary,
+        html[data-bs-theme="dark"] body h4.text-primary,
+        html[data-bs-theme="dark"] body h5.text-primary,
+        html[data-bs-theme="dark"] body .fw-bold.text-primary { color: #2563eb !important; }
+        
+        /* Protects Red */
+        html[data-bs-theme="dark"] body .text-danger,
+        html[data-bs-theme="dark"] body h4.text-danger,
+        html[data-bs-theme="dark"] body .fw-bold.text-danger { color: #dc3545 !important; }
+        
+        /* Protects Grey */
+        html[data-bs-theme="dark"] body .text-muted, 
+        html[data-bs-theme="dark"] body .text-secondary,
+        html[data-bs-theme="dark"] body h5.text-secondary,
+        html[data-bs-theme="dark"] body .fw-bold.text-muted,
+        html[data-bs-theme="dark"] body .fw-bold.text-secondary { color: #94a3b8 !important; }
 
         /* 1c. Mock Dashboard Card Background & Lines */
         html[data-bs-theme="dark"] .hero-open .card,
